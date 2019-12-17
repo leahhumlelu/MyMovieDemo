@@ -1,4 +1,4 @@
-package com.example.mymoviedemo;
+package com.example.mymoviedemo.ui;
 
 import androidx.lifecycle.ViewModelProviders;
 
@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -19,16 +20,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.example.mymoviedemo.MainPageViewModel;
+import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.model.Movie;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainPageFragment extends Fragment {
     private static final String TAG = "MainPageFragment";
     private RecyclerView movieListRv;
-
+    private NavController navController;
     private MainPageViewModel mViewModel;
     private LinearLayout warningLayout;
     private Button retryBtn;

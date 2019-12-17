@@ -1,14 +1,14 @@
-package com.example.mymoviedemo;
+package com.example.mymoviedemo.ui;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.model.Movie;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.mymoviedemo;
+package com.example.mymoviedemo.ui;
 
 import androidx.lifecycle.ViewModelProviders;
 
@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.mymoviedemo.FavoriteMoviesViewModel;
+import com.example.mymoviedemo.R;
 
 public class FavoriteMoviesFragment extends Fragment {
 
