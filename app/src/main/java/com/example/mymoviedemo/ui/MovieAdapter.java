@@ -12,6 +12,7 @@ import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.model.Movie;
 import com.example.mymoviedemo.model.MovieListResult;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
@@ -42,10 +43,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     public void setMovieList(List<Movie> movieList) {
-        if(this.movieList!=movieList){
-            this.movieList = movieList;
-            notifyDataSetChanged();
+        if(this.movieList==null){
+            this.movieList = new ArrayList<>();
         }
+        this.movieList.addAll(movieList);
+        notifyDataSetChanged();
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {

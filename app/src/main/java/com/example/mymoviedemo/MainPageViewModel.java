@@ -14,14 +14,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class MainPageViewModel extends ViewModel {
     // TODO: Implement the ViewModel
-    MovieListRepository movieListRepository;
+    private MovieListRepository movieListRepository;
+    private int page = 1;
 
     @Inject
     public MainPageViewModel(MovieListRepository movieListRepository) {
         this.movieListRepository = movieListRepository;
     }
 
-    public Observable<List<Movie>> getMovieList(int sort, int page){
-        return movieListRepository.getMovieList(sort,page).observeOn(AndroidSchedulers.mainThread());
+    public Observable<List<Movie>> getMovieList(int sort){
+        return movieListRepository.getMovieList(sort,page++).observeOn(AndroidSchedulers.mainThread());
     }
 }

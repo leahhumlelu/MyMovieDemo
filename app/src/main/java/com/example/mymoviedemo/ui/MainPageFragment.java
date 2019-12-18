@@ -11,7 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,9 +46,11 @@ public class MainPageFragment extends Fragment {
     private NavController navController;
     private LinearLayout warningLayout;
     private Button retryBtn;
+    private SwipeRefreshLayout swipeRefreshLayout;
     @Inject
     public ViewModelProviderFactory factory;
     private MainPageViewModel mViewModel;
+    private boolean isLoading = false;
 
     public static MainPageFragment newInstance() {
         return new MainPageFragment();
@@ -76,7 +80,7 @@ public class MainPageFragment extends Fragment {
                 isOnline();
             }
         });
-
+        //swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
     }
 
     @Override
@@ -84,7 +88,9 @@ public class MainPageFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         //showing different contents based on internet connection
         isOnline();
+        initScrollListener();
     }
+
 
     private void isOnline(){
         if(checkInternetConnection()){
@@ -95,7 +101,7 @@ public class MainPageFragment extends Fragment {
             movieListRv.setAdapter(movieAdapter);
 
             mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
-            mViewModel.getMovieList(Util.SORT_BY_POPULAR,1).subscribe(new Observer<List<Movie>>() {
+            mViewModel.getMovieList(Util.SORT_BY_POPULAR).subscribe(new Observer<List<Movie>>() {
                 @Override
                 public void onSubscribe(Disposable d) {
 
@@ -104,6 +110,7 @@ public class MainPageFragment extends Fragment {
                 @Override
                 public void onNext(List<Movie> movies) {
                     movieAdapter.setMovieList(movies);
+                    isLoading = false;
                 }
 
                 @Override
@@ -126,10 +133,20 @@ public class MainPageFragment extends Fragment {
 
     }
 
+
     private boolean checkInternetConnection() {
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    private void initScrollListener() {
+        movieListRv.addOnScrollListener(new EndlessScrollEventListener() {
+            @Override
+            public void onLoadMore() {
+                mViewModel.getMovieList(Util.SORT_BY_POPULAR);
+            }
+        });
     }
 
 }
