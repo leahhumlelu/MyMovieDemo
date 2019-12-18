@@ -1,8 +1,11 @@
-package com.example.mymoviedemo.di;
+package com.example.mymoviedemo;
 
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+
+import com.example.mymoviedemo.di.AppComponent;
+import com.example.mymoviedemo.di.DaggerAppComponent;
 
 import javax.inject.Inject;
 
@@ -10,7 +13,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 
-class MyMovieDemoApp extends Application implements HasActivityInjector {
+public class MyMovieDemoApp extends Application implements HasActivityInjector {
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 

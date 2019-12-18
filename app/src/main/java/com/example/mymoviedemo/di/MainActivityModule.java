@@ -12,12 +12,12 @@ import dagger.android.ContributesAndroidInjector;
 
 @Module
 public abstract class MainActivityModule {
-    @ContributesAndroidInjector(modules = {MainPageViewModel.class})
+    @ContributesAndroidInjector(modules = {})
     abstract MainPageFragment contributeMainPageFragment();
 
-    @ContributesAndroidInjector(modules = {DetailPageViewModel.class})
+    @ContributesAndroidInjector(modules = {})
     abstract DetailPageFragment contributeDetailPageFragment();
 
-    @ContributesAndroidInjector(modules = {FavoriteMoviesViewModel.class})
+    @ContributesAndroidInjector(modules = {})
     abstract FavoriteMoviesFragment contributeFavoriteMoviesFragment();
 }

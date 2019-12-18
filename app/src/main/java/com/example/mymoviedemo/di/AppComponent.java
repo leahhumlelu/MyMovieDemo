@@ -2,6 +2,8 @@ package com.example.mymoviedemo.di;
 
 import android.app.Application;
 
+import com.example.mymoviedemo.MyMovieDemoApp;
+
 import javax.inject.Singleton;
 
 import dagger.BindsInstance;
