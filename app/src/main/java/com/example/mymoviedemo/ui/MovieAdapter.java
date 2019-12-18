@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.model.Movie;
+import com.example.mymoviedemo.model.MovieListResult;
 
 import java.util.List;
 

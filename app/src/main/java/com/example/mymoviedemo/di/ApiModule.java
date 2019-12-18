@@ -2,6 +2,7 @@ package com.example.mymoviedemo.di;
 
 import android.app.Application;
 
+import com.example.mymoviedemo.BuildConfig;
 import com.example.mymoviedemo.data_fetch.remote.MovieApiInterface;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,7 +22,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class ApiModule {
-    public static final String THE_MOVIE_DB_BASE_URL = "";
     @Provides
     @Singleton
     Cache provideCache(Application application){
@@ -32,14 +32,13 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Cache cache, ConnectivityInterceptor connectivityInterceptor, RequestInterceptor requestInterceptor){
+    OkHttpClient provideOkHttpClient(Cache cache, RequestInterceptor requestInterceptor){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.level(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
         httpClientBuilder.cache(cache)
                 .addInterceptor(logging)
-                .addNetworkInterceptor(requestInterceptor)
-                .addInterceptor(connectivityInterceptor);
+                .addNetworkInterceptor(requestInterceptor);
         return httpClientBuilder.build();
     }
 
@@ -52,13 +51,12 @@ public class ApiModule {
     @Provides
     @Singleton
     Retrofit provideRetrofit(Gson gson, OkHttpClient okHttpClient){
-        Retrofit retrofit =new Retrofit.Builder()
-                .baseUrl(THE_MOVIE_DB_BASE_URL)
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
                 .client(okHttpClient)
                 .build();
-        return retrofit;
     }
 
 

@@ -114,14 +114,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id){
             case R.id.main:
                 navController.navigate(R.id.mainPageFragment);
+                break;
             case R.id.favorites:
                 navController.navigate(R.id.favoriteMoviesFragment);
+                break;
         }
         return false;
     }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
-        return null;
+        return dispatchingAndroidInjector;
     }
 }

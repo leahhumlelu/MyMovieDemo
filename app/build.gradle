@@ -3,6 +3,9 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
+    def localProperties = new Properties()
+    localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+    def api_key = localProperties['api_key']
     defaultConfig {
         applicationId "com.example.mymoviedemo"
         minSdkVersion 15
@@ -10,15 +13,13 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "API_KEY","\"${api_key}\""
+        buildConfigField "String", "BASE_URL","\"https://api.themoviedb.org/3/\""
     }
     buildTypes {
         release {
-            buildConfigField "String", "API_KEY", "\"######\"" //todo: put api key here
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug{
-            buildConfigField "String", "API_KEY", "\"######\"" //todo: put api key here
         }
     }
 }

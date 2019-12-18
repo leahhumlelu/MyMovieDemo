@@ -22,18 +22,31 @@ import android.widget.LinearLayout;
 
 import com.example.mymoviedemo.MainPageViewModel;
 import com.example.mymoviedemo.R;
+import com.example.mymoviedemo.ViewModelProviderFactory;
 import com.example.mymoviedemo.model.Movie;
+import com.example.mymoviedemo.model.MovieListResult;
+import com.example.mymoviedemo.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+import dagger.android.support.AndroidSupportInjection;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class MainPageFragment extends Fragment {
     private static final String TAG = "MainPageFragment";
     private RecyclerView movieListRv;
     private NavController navController;
-    private MainPageViewModel mViewModel;
     private LinearLayout warningLayout;
     private Button retryBtn;
+    @Inject
+    public ViewModelProviderFactory factory;
+    private MainPageViewModel mViewModel;
 
     public static MainPageFragment newInstance() {
         return new MainPageFragment();
@@ -47,6 +60,7 @@ public class MainPageFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        AndroidSupportInjection.inject(this);
         super.onViewCreated(view, savedInstanceState);
         setupViews(view);
     }
@@ -60,7 +74,6 @@ public class MainPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 isOnline();
-                //todo
             }
         });
 
@@ -77,29 +90,43 @@ public class MainPageFragment extends Fragment {
         if(checkInternetConnection()){
             Log.d(TAG, "isOnline: true");
             warningLayout.setVisibility(View.GONE);
-            List<Movie> movieList = new ArrayList<>();
-            movieList.add(new Movie("dummy title"));
-            movieList.add(new Movie("dummy title2"));
-            movieListRv.setAdapter(new MovieAdapter(movieList));
+
+            final MovieAdapter movieAdapter = new MovieAdapter(null);
+            movieListRv.setAdapter(movieAdapter);
+
+            mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
+            mViewModel.getMovieList(Util.SORT_BY_POPULAR,1).subscribe(new Observer<List<Movie>>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(List<Movie> movies) {
+                    movieAdapter.setMovieList(movies);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.d(TAG, "onError: "+e.getMessage());
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+
+
+
         }else{
             Log.d(TAG, "isOnline: false");
             warningLayout.setVisibility(View.VISIBLE);
         }
-        mViewModel = ViewModelProviders.of(this).get(MainPageViewModel.class);
+
     }
 
     private boolean checkInternetConnection() {
-        /*Runtime runtime = Runtime.getRuntime();
-        try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int exitValue = ipProcess.waitFor();
-            return exitValue==0;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return false;*/
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
