@@ -1,29 +1,17 @@
 package com.example.mymoviedemo.data_fetch;
 
 import android.util.Log;
-import android.util.Pair;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.paging.PageKeyedDataSource;
-
+import com.example.mymoviedemo.data_fetch.local.LocalDataSource;
 import com.example.mymoviedemo.data_fetch.remote.RemoteDataSource;
 import com.example.mymoviedemo.model.Movie;
-import com.example.mymoviedemo.model.MovieListResult;
-import com.example.mymoviedemo.utilities.Util;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
-import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MovieListRepository {
     private static final String TAG = "MovieListRepository";
@@ -38,7 +26,6 @@ public class MovieListRepository {
 
     public Observable<List<Movie>> getMovieList(int sort, int page, int loadSize){
         try{
-
             Observable<List<Movie>> remoteData = remoteDataSource.getMovieList(sort, page);
             Observable<List<Movie>> localData = localDataSource.getMovieList(sort,loadSize);
             return Observable.zip(remoteData, localData, new BiFunction<List<Movie>, List<Movie>, List<Movie>>() {

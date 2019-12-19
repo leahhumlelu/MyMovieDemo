@@ -13,18 +13,18 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 
-public class MovieDataSourceFactory extends DataSource.Factory<Pair<Integer,Integer>, Movie> {
+public class MovieDataSourceFactory extends DataSource.Factory<Integer, Movie> {
     public MovieDataSource movieDataSource;
     private MutableLiveData<MovieDataSource> movieDataSourceMutableLiveData;
 
-    public MovieDataSourceFactory(MovieListRepository movieListRepository) {
-        movieDataSource = new MovieDataSource(movieListRepository);
+    public MovieDataSourceFactory(MovieListRepository movieListRepository,int sort) {
+        movieDataSource = new MovieDataSource(movieListRepository,sort);
         movieDataSourceMutableLiveData = new MutableLiveData<>();
     }
 
     @NonNull
     @Override
-    public DataSource<Pair<Integer, Integer>, Movie> create() {
+    public DataSource<Integer, Movie> create() {
         movieDataSourceMutableLiveData.postValue(movieDataSource);
         return movieDataSource;
     }

@@ -1,4 +1,4 @@
-package com.example.mymoviedemo.data_fetch;
+package com.example.mymoviedemo.data_fetch.local;
 
 import androidx.lifecycle.MutableLiveData;
 

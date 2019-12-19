@@ -1,8 +1,11 @@
 package com.example.mymoviedemo.ui;
 
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +14,8 @@ import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.mymoviedemo.BuildConfig;
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.model.Movie;
 
@@ -60,15 +65,17 @@ public class MovieAdapter extends PagedListAdapter<Movie,MovieAdapter.MovieViewH
                 clickListener.onClick(movie);
             }
         });
-        holder.textView.setText(movie.getTitle());
+        Uri moviePosterUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+movie.getPosterPath());
+        Log.i(TAG, "onBindViewHolder: "+moviePosterUri);
+        Glide.with(holder.itemView).load(moviePosterUri).into(holder.moviePosterIv);
     }
 
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        ImageView moviePosterIv;
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.text_view);
+            moviePosterIv = itemView.findViewById(R.id.movie_poster_iv);
         }
     }
 }

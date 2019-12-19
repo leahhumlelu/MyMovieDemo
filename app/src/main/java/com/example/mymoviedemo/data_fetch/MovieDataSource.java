@@ -17,16 +17,19 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public class MovieDataSource extends PageKeyedDataSource<Pair<Integer,Integer>, Movie> {
+public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
     private static final String TAG = "MovieDataSource";
     private MovieListRepository movieListRepository;
     private MutableLiveData networkState;
     private MutableLiveData initialLoading;
+    private int sort;
 
-    public MovieDataSource(MovieListRepository movieListRepository) {
+    public MovieDataSource(MovieListRepository movieListRepository,int sort) {
         this.movieListRepository = movieListRepository;
+        this.sort = sort;
         networkState = new MutableLiveData();
         initialLoading = new MutableLiveData();
     }
@@ -41,10 +44,9 @@ public class MovieDataSource extends PageKeyedDataSource<Pair<Integer,Integer>, 
 
 
     @Override
-    public void loadInitial(@NonNull final LoadInitialParams<Pair<Integer, Integer>> params, @NonNull final LoadInitialCallback<Pair<Integer, Integer>, Movie> callback) {
-        final int sort = Util.SORT_BY_POPULAR;
+    public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull final LoadInitialCallback<Integer, Movie> callback) {
         final int start_page =1;
-        movieListRepository.getMovieList(sort,start_page,params.requestedLoadSize).subscribe(new Observer<List<Movie>>() {
+        movieListRepository.getMovieList(sort,start_page,params.requestedLoadSize).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<List<Movie>>() {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -52,7 +54,7 @@ public class MovieDataSource extends PageKeyedDataSource<Pair<Integer,Integer>, 
 
             @Override
             public void onNext(List<Movie> movies) {
-                callback.onResult(movies,null,Pair.create(sort,start_page+1));
+                callback.onResult(movies,null,start_page+1);
             }
 
             @Override
@@ -65,36 +67,37 @@ public class MovieDataSource extends PageKeyedDataSource<Pair<Integer,Integer>, 
 
             }
         });
+    }
+
+    @Override
+    public void loadBefore(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, Movie> callback) {
 
     }
 
     @Override
-    public void loadBefore(@NonNull LoadParams<Pair<Integer, Integer>> params, @NonNull LoadCallback<Pair<Integer, Integer>, Movie> callback) {
-        //todo
-    }
+    public void loadAfter(@NonNull final LoadParams<Integer> params, @NonNull final LoadCallback<Integer, Movie> callback) {
+        movieListRepository.getMovieList(sort,params.key,params.requestedLoadSize)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Movie>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-    @Override
-    public void loadAfter(@NonNull final LoadParams<Pair<Integer, Integer>> params, @NonNull final LoadCallback<Pair<Integer, Integer>, Movie> callback) {
-        movieListRepository.getMovieList(params.key.first,params.key.second,params.requestedLoadSize).subscribe(new Observer<List<Movie>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
+                    }
 
-            }
+                    @Override
+                    public void onNext(List<Movie> movies) {
+                        callback.onResult(movies,params.key+1);
+                    }
 
-            @Override
-            public void onNext(List<Movie> movies) {
-                callback.onResult(movies,Pair.create(params.key.first,params.key.second+1));
-            }
+                    @Override
+                    public void onError(Throwable e) {
 
-            @Override
-            public void onError(Throwable e) {
+                    }
 
-            }
+                    @Override
+                    public void onComplete() {
 
-            @Override
-            public void onComplete() {
-
-            }
-        });
+                    }
+                });
     }
 }

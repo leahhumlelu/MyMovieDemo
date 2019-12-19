@@ -1,6 +1,7 @@
 package com.example.mymoviedemo.ui;
 
 import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -33,8 +34,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 
 public class MainPageFragment extends Fragment {
     private static final String TAG = "MainPageFragment";
@@ -43,6 +42,7 @@ public class MainPageFragment extends Fragment {
     private LinearLayout warningLayout;
     private Button retryBtn;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private MovieAdapter movieAdapter;
     @Inject
     public ViewModelProviderFactory factory;
     private MainPageViewModel mViewModel;
@@ -68,6 +68,8 @@ public class MainPageFragment extends Fragment {
     private void setupViews(View view){
         movieListRv = view.findViewById(R.id.movie_list_rv);
         movieListRv.setAdapter(new MovieAdapter(null));
+        movieAdapter = new MovieAdapter(null);
+        movieListRv.setAdapter(movieAdapter);
         warningLayout = view.findViewById(R.id.no_internet_warning_layout);
         retryBtn = view.findViewById(R.id.retry_btn);
         retryBtn.setOnClickListener(new View.OnClickListener() {
@@ -76,63 +78,37 @@ public class MainPageFragment extends Fragment {
                 isOnline();
             }
         });
-        //swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
+        swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //showing different contents based on internet connection
         isOnline();
-        initScrollListener();
+        //initScrollListener();
     }
 
 
     private void isOnline(){
-        if(checkInternetConnection()){
+        mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
+        mViewModel.getMovieList(Util.SORT_BY_POPULAR)
+                .observe(this,
+                new Observer<PagedList<Movie>>() {
+            @Override
+            public void onChanged(PagedList<Movie> moviePagedList) {
+                movieAdapter.submitList(moviePagedList);
+            }
+        });
+
+
+        /*if(checkInternetConnection()){
             Log.d(TAG, "isOnline: true");
             warningLayout.setVisibility(View.GONE);
-
-            final MovieAdapter movieAdapter = new MovieAdapter(null);
-            movieListRv.setAdapter(movieAdapter);
-
-            mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
-            mViewModel.getMovieList(Util.SORT_BY_POPULAR).observe(this, new androidx.lifecycle.Observer<PagedList<Movie>>() {
-                @Override
-                public void onChanged(PagedList<Movie> moviePagedList) {
-                    movieAdapter.submitList(moviePagedList);
-                }
-            });
-            /*mViewModel.getMovieList(Util.SORT_BY_POPULAR).subscribe(new Observer<List<Movie>>() {
-                @Override
-                public void onSubscribe(Disposable d) {
-
-                }
-
-                @Override
-                public void onNext(List<Movie> movies) {
-
-                    movieAdapter.addMovieList(movies);
-                    isLoading = false;
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Log.d(TAG, "onError: "+e.getMessage());
-                }
-
-                @Override
-                public void onComplete() {
-
-                }
-            });*/
-
-
 
         }else{
             Log.d(TAG, "isOnline: false");
             warningLayout.setVisibility(View.VISIBLE);
-        }
+        }*/
 
     }
 

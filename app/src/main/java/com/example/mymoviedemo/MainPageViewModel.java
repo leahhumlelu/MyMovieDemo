@@ -16,7 +16,6 @@ import javax.inject.Inject;
 public class MainPageViewModel extends ViewModel {
     // TODO: Implement the ViewModel
     private MovieListRepository movieListRepository;
-    private int page = 1;
     private LiveData<PagedList<Movie>> moviePagedList;
 
     @Inject
@@ -25,12 +24,13 @@ public class MainPageViewModel extends ViewModel {
     }
 
     public LiveData<PagedList<Movie>> getMovieList(int sort){
-        MovieDataSourceFactory factory = new MovieDataSourceFactory(movieListRepository);
+        MovieDataSourceFactory factory = new MovieDataSourceFactory(movieListRepository,sort);
         PagedList.Config pagedListConfig = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
                 .setPageSize(20)
                 .build();
         moviePagedList = new LivePagedListBuilder<>(factory,pagedListConfig)
-                .setInitialLoadKey(Pair.create(sort,1))
+                .setInitialLoadKey(1)
                 .build();
         return moviePagedList;
     }
