@@ -17,7 +17,8 @@ public class DbModule {
     @Provides
     @Singleton
     MovieDatabase provideMovieDatabase(Application application){
-       return Room.databaseBuilder(application, MovieDatabase.class, "movie_db").build();
+       return Room.databaseBuilder(application, MovieDatabase.class, "movie_db")
+               .build();
     }
 
     @Provides

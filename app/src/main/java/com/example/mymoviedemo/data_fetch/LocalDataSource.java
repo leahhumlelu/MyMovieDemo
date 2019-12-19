@@ -28,20 +28,20 @@ public class LocalDataSource {
         this.movieDao = movieDao;
     }
 
-    public Observable<List<Movie>> getMovieList(int sort) throws Exception {
+    public Observable<List<Movie>> getMovieList(int sort, final int loadSize) throws Exception {
         switch (sort){
             case Util.SORT_BY_TOP_RATED:
                 return Observable.fromCallable(new Callable<List<Movie>>() {
                     @Override
                     public List<Movie> call() {
-                        return movieDao.getTopRatedMovieList();
+                        return movieDao.getTopRatedMovieList(loadSize);
                     }
                 }).subscribeOn(ioScheduler);
             default:
                 return Observable.fromCallable(new Callable<List<Movie>>() {
                     @Override
                     public List<Movie> call(){
-                        return movieDao.getPopularMovieList();
+                        return movieDao.getPopularMovieList(loadSize);
                     }
                 }).subscribeOn(ioScheduler);
         }

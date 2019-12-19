@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -26,19 +26,15 @@ import com.example.mymoviedemo.MainPageViewModel;
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.ViewModelProviderFactory;
 import com.example.mymoviedemo.model.Movie;
-import com.example.mymoviedemo.model.MovieListResult;
 import com.example.mymoviedemo.utilities.Util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
 import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 public class MainPageFragment extends Fragment {
     private static final String TAG = "MainPageFragment";
@@ -101,7 +97,13 @@ public class MainPageFragment extends Fragment {
             movieListRv.setAdapter(movieAdapter);
 
             mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
-            mViewModel.getMovieList(Util.SORT_BY_POPULAR).subscribe(new Observer<List<Movie>>() {
+            mViewModel.getMovieList(Util.SORT_BY_POPULAR).observe(this, new androidx.lifecycle.Observer<PagedList<Movie>>() {
+                @Override
+                public void onChanged(PagedList<Movie> moviePagedList) {
+                    movieAdapter.submitList(moviePagedList);
+                }
+            });
+            /*mViewModel.getMovieList(Util.SORT_BY_POPULAR).subscribe(new Observer<List<Movie>>() {
                 @Override
                 public void onSubscribe(Disposable d) {
 
@@ -109,7 +111,8 @@ public class MainPageFragment extends Fragment {
 
                 @Override
                 public void onNext(List<Movie> movies) {
-                    movieAdapter.setMovieList(movies);
+
+                    movieAdapter.addMovieList(movies);
                     isLoading = false;
                 }
 
@@ -122,7 +125,7 @@ public class MainPageFragment extends Fragment {
                 public void onComplete() {
 
                 }
-            });
+            });*/
 
 
 

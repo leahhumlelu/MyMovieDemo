@@ -6,22 +6,42 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedList;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.model.Movie;
-import com.example.mymoviedemo.model.MovieListResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
+public class MovieAdapter extends PagedListAdapter<Movie,MovieAdapter.MovieViewHolder> {
     private static final String TAG = "MovieAdapter";
-    private List<Movie> movieList;
+    private ClickListener clickListener;
 
-    public MovieAdapter(List<Movie> movieList) {
-        this.movieList = movieList;
+    private interface ClickListener {
+        void onClick(Movie movie);
     }
+
+    protected MovieAdapter(ClickListener listener) {
+        super(DIFF_CALLBACK);
+        this.clickListener = listener;
+    }
+
+    private static final DiffUtil.ItemCallback<Movie> DIFF_CALLBACK = new DiffUtil.ItemCallback<Movie>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Movie oldItem, @NonNull Movie newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Movie oldItem, @NonNull Movie newItem) {
+            return (oldItem.getTitle().equals(newItem.getTitle()) && oldItem.getPosterPath().equals(newItem.getPosterPath()));
+        }
+    };
+
 
     @NonNull
     @Override
@@ -32,23 +52,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-        Movie movie = movieList.get(position);
+        final Movie movie = getItem(position);
+        if(movie==null) return;
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickListener.onClick(movie);
+            }
+        });
         holder.textView.setText(movie.getTitle());
     }
 
-    @Override
-    public int getItemCount() {
-        if(movieList==null) return 0;
-        return movieList.size();
-    }
-
-    public void setMovieList(List<Movie> movieList) {
-        if(this.movieList==null){
-            this.movieList = new ArrayList<>();
-        }
-        this.movieList.addAll(movieList);
-        notifyDataSetChanged();
-    }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
         TextView textView;

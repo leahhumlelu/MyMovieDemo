@@ -1,13 +1,16 @@
 package com.example.mymoviedemo.data_fetch;
 
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.PageKeyedDataSource;
 
 import com.example.mymoviedemo.data_fetch.remote.RemoteDataSource;
 import com.example.mymoviedemo.model.Movie;
 import com.example.mymoviedemo.model.MovieListResult;
+import com.example.mymoviedemo.utilities.Util;
 
 import java.util.List;
 
@@ -33,10 +36,11 @@ public class MovieListRepository {
         this.localDataSource = localDataSource;
     }
 
-    public Observable<List<Movie>> getMovieList(int sort, int page){
+    public Observable<List<Movie>> getMovieList(int sort, int page, int loadSize){
         try{
+
             Observable<List<Movie>> remoteData = remoteDataSource.getMovieList(sort, page);
-            Observable<List<Movie>> localData = localDataSource.getMovieList(sort);
+            Observable<List<Movie>> localData = localDataSource.getMovieList(sort,loadSize);
             return Observable.zip(remoteData, localData, new BiFunction<List<Movie>, List<Movie>, List<Movie>>() {
                 @Override
                 public List<Movie> apply(List<Movie> movies, List<Movie> movies2) {
