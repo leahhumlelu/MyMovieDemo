@@ -15,7 +15,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_KEY","\"${api_key}\""
         buildConfigField "String", "BASE_URL","\"https://api.themoviedb.org/3/\""
-        buildConfigField "String", "IMAGE_BASE_URL","\"https://image.tmdb.org/t/p/w92\""
+        buildConfigField "String", "IMAGE_BASE_URL","\"https://image.tmdb.org/t/p/w154\""
         buildConfigField "String", "POSTER_SIZE","\"w154\""
     }
     buildTypes {

@@ -12,7 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -35,7 +38,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class MainPageFragment extends Fragment {
+public class MainPageFragment extends Fragment implements MovieAdapter.ClickListener {
     private static final String TAG = "MainPageFragment";
     private RecyclerView movieListRv;
     private NavController navController;
@@ -68,7 +71,12 @@ public class MainPageFragment extends Fragment {
     private void setupViews(View view){
         movieListRv = view.findViewById(R.id.movie_list_rv);
         movieListRv.setAdapter(new MovieAdapter(null));
-        movieAdapter = new MovieAdapter(null);
+        //int columns = (int) getResources().getDimension(R.dimen.span_count);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
+        movieListRv.setLayoutManager(layoutManager);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),layoutManager.getOrientation());
+        movieListRv.addItemDecoration(itemDecoration);
+        movieAdapter = new MovieAdapter(this);
         movieListRv.setAdapter(movieAdapter);
         warningLayout = view.findViewById(R.id.no_internet_warning_layout);
         retryBtn = view.findViewById(R.id.retry_btn);
@@ -79,6 +87,7 @@ public class MainPageFragment extends Fragment {
             }
         });
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
+        navController = Navigation.findNavController(view);
     }
 
     @Override
@@ -128,4 +137,8 @@ public class MainPageFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onClick(Movie movie) {
+        navController.navigate(R.id.action_mainPageFragment_to_detailPageFragment);
+    }
 }

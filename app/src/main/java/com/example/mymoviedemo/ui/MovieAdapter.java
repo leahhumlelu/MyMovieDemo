@@ -26,7 +26,7 @@ public class MovieAdapter extends PagedListAdapter<Movie,MovieAdapter.MovieViewH
     private static final String TAG = "MovieAdapter";
     private ClickListener clickListener;
 
-    private interface ClickListener {
+    public interface ClickListener {
         void onClick(Movie movie);
     }
 
