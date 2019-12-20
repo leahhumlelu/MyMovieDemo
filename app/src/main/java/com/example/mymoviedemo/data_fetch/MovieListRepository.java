@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.mymoviedemo.data_fetch.local.LocalDataSource;
 import com.example.mymoviedemo.data_fetch.remote.RemoteDataSource;
 import com.example.mymoviedemo.model.Movie;
+import com.example.mymoviedemo.model.MovieDetailResult;
 
 import java.util.List;
 
@@ -39,5 +40,21 @@ public class MovieListRepository {
             return null;
         }
 
+    }
+
+    public Observable<MovieDetailResult> getMovieById(int movieId){
+        try{
+            Observable<MovieDetailResult> remoteData = remoteDataSource.getMovieById(movieId);
+            Observable<MovieDetailResult> localData = localDataSource.getMovieDetailById(movieId);
+            return Observable.zip(remoteData, localData, new BiFunction<MovieDetailResult, MovieDetailResult, MovieDetailResult>() {
+                @Override
+                public MovieDetailResult apply(MovieDetailResult movieDetailResult, MovieDetailResult movieDetailResult2) throws Exception {
+                    return movieDetailResult==null? movieDetailResult:movieDetailResult2;
+                }
+            });
+        }catch (Exception e){
+            Log.d(TAG, "getMovieById: ");
+            return null;
+        }
     }
 }

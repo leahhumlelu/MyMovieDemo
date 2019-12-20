@@ -139,6 +139,10 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
 
     @Override
     public void onClick(Movie movie) {
-        navController.navigate(R.id.action_mainPageFragment_to_detailPageFragment);
+        //navController.navigate(R.id.action_mainPageFragment_to_detailPageFragment);
+        MainPageFragmentDirections.ActionMainPageFragmentToDetailPageFragment action =
+                MainPageFragmentDirections.actionMainPageFragmentToDetailPageFragment(movie.getId());
+        navController.navigate(action);
+
     }
 }

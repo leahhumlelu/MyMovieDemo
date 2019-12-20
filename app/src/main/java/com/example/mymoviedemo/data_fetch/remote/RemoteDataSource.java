@@ -2,6 +2,7 @@ package com.example.mymoviedemo.data_fetch.remote;
 
 import com.example.mymoviedemo.data_fetch.local.LocalDataSource;
 import com.example.mymoviedemo.model.Movie;
+import com.example.mymoviedemo.model.MovieDetailResult;
 import com.example.mymoviedemo.model.MovieListResult;
 import com.example.mymoviedemo.utilities.Util;
 
@@ -53,5 +54,16 @@ public class RemoteDataSource {
                 })
                 .subscribeOn(ioScheduler);
 
+    }
+
+
+    public Observable<MovieDetailResult> getMovieById(int movieId){
+        Observable<MovieDetailResult> remoteData = movieApiInterface.getMovieDetailById(movieId);
+        return remoteData.doOnNext(new Consumer<MovieDetailResult>() {
+            @Override
+            public void accept(MovieDetailResult movieDetailResult) throws Exception {
+                localDataSource.saveMovieDetail(movieDetailResult);
+            }
+        }).subscribeOn(ioScheduler);
     }
 }

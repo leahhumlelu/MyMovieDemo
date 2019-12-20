@@ -34,7 +34,7 @@ public class DetailPageFragment extends Fragment {
     private DetailPageViewModel mViewModel;
     private AppBarLayout appBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private boolean favoriteBtnEnabled;
+
     private FloatingActionButton floatingActionButton;
     private NavController navController;
     private Toolbar toolbar;
@@ -58,6 +58,7 @@ public class DetailPageFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        int movieId = DetailPageFragmentArgs.fromBundle(getArguments()).getMovieId();
         setupCollapsingAppbar(view);
     }
 
