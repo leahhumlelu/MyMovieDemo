@@ -17,7 +17,6 @@
     <fragment
         android:id="@+id/detailPageFragment"
         android:name="com.example.mymoviedemo.ui.DetailPageFragment"
-        android:label="detail_page_fragment"
         tools:layout="@layout/detail_page_fragment" />
     <fragment
         android:id="@+id/favoriteMoviesFragment"
