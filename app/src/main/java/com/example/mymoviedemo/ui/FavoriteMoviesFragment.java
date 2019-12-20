@@ -1,4 +1,4 @@
-package com.example.mymoviedemo;
+package com.example.mymoviedemo.ui;
 
 import androidx.lifecycle.ViewModelProviders;
 
@@ -12,24 +12,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class DetailPageFragment extends Fragment {
+import com.example.mymoviedemo.FavoriteMoviesViewModel;
+import com.example.mymoviedemo.R;
 
-    private DetailPageViewModel mViewModel;
+public class FavoriteMoviesFragment extends Fragment {
 
-    public static DetailPageFragment newInstance() {
-        return new DetailPageFragment();
+    private FavoriteMoviesViewModel mViewModel;
+
+    public static FavoriteMoviesFragment newInstance() {
+        return new FavoriteMoviesFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.detail_page_fragment, container, false);
+        return inflater.inflate(R.layout.favorite_movies_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(DetailPageViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(FavoriteMoviesViewModel.class);
         // TODO: Use the ViewModel
     }
 

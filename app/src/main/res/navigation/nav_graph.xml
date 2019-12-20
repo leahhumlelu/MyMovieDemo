@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainPageFragment"
-        android:name="com.example.mymoviedemo.MainPageFragment"
+        android:name="com.example.mymoviedemo.ui.MainPageFragment"
         android:label="main_page_fragment"
         tools:layout="@layout/main_page_fragment" >
         <action
@@ -16,12 +16,12 @@
     </fragment>
     <fragment
         android:id="@+id/detailPageFragment"
-        android:name="com.example.mymoviedemo.DetailPageFragment"
+        android:name="com.example.mymoviedemo.ui.DetailPageFragment"
         android:label="detail_page_fragment"
         tools:layout="@layout/detail_page_fragment" />
     <fragment
         android:id="@+id/favoriteMoviesFragment"
-        android:name="com.example.mymoviedemo.FavoriteMoviesFragment"
+        android:name="com.example.mymoviedemo.ui.FavoriteMoviesFragment"
         android:label="favorite_movies_fragment"
         tools:layout="@layout/favorite_movies_fragment" />
 </navigation>
