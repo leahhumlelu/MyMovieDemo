@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.mymoviedemo.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.security.Permissions;
@@ -30,16 +31,16 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
+public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector,BottomNavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
     @Inject
     public DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
 
     private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
+
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
+    private BottomNavigationView bottomNavigationView;
     private static final int INTERNET_REQUEST_CODE = 12;
 
     @Override
@@ -61,15 +62,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupNavigation() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navigationView);
-        appBarConfiguration = new AppBarConfiguration.Builder(R.id.mainPageFragment,R.id.favoriteMoviesFragment)
-                .setDrawerLayout(drawerLayout).build();
-        navController = Navigation.findNavController(this,R.id.nav_host_fragment);
 
+        appBarConfiguration = new AppBarConfiguration.Builder(R.id.mainPageFragment,R.id.favoriteMoviesFragment).build();
+        navController = Navigation.findNavController(this,R.id.nav_host_fragment);
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        NavigationUI.setupWithNavController(bottomNavigationView,navController);
         NavigationUI.setupActionBarWithNavController(this,navController,appBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView,navController);
-        navigationView.setNavigationItemSelectedListener(this);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -92,23 +92,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return NavigationUI.navigateUp(navController,appBarConfiguration) || super.onSupportNavigateUp();
     }
 
+
     @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed: ");
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }else{
-            super.onBackPressed();
-        }
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingAndroidInjector;
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        //close drawer when one item get selected
         menuItem.setChecked(true);
-        drawerLayout.closeDrawers();
-
-        //switch to different fragment based on selected id
         int id = menuItem.getItemId();
         switch (id){
             case R.id.main:
@@ -119,10 +111,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         return false;
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return dispatchingAndroidInjector;
     }
 }
