@@ -1,5 +1,8 @@
 package com.example.mymoviedemo.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -11,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 @Entity
-public class Movie {
+public class Movie implements Parcelable {
     @SerializedName("popularity")
     @Expose
     private Double popularity;
@@ -29,22 +32,12 @@ public class Movie {
     @PrimaryKey
     @NonNull
     private Integer id;
-    @SerializedName("adult")
-    @Expose
-    private Boolean adult;
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
-    @SerializedName("original_language")
-    @Expose
-    private String originalLanguage;
     @SerializedName("original_title")
     @Expose
     private String originalTitle;
-    @SerializedName("genre_ids")
-    @Expose
-    @Ignore
-    private List<Integer> genreIds = null;
     @SerializedName("title")
     @Expose
     private String title;
@@ -57,6 +50,9 @@ public class Movie {
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
+
+    public Movie() {
+    }
 
     public Double getPopularity() {
         return popularity;
@@ -98,13 +94,6 @@ public class Movie {
         this.id = id;
     }
 
-    public Boolean getAdult() {
-        return adult;
-    }
-
-    public void setAdult(Boolean adult) {
-        this.adult = adult;
-    }
 
     public String getBackdropPath() {
         return backdropPath;
@@ -114,13 +103,6 @@ public class Movie {
         this.backdropPath = backdropPath;
     }
 
-    public String getOriginalLanguage() {
-        return originalLanguage;
-    }
-
-    public void setOriginalLanguage(String originalLanguage) {
-        this.originalLanguage = originalLanguage;
-    }
 
     public String getOriginalTitle() {
         return originalTitle;
@@ -128,14 +110,6 @@ public class Movie {
 
     public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
-    }
-
-    public List<Integer> getGenreIds() {
-        return genreIds;
-    }
-
-    public void setGenreIds(List<Integer> genreIds) {
-        this.genreIds = genreIds;
     }
 
     public String getTitle() {
@@ -168,5 +142,89 @@ public class Movie {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    protected Movie(Parcel in) {
+        if (in.readByte() == 0) {
+            popularity = null;
+        } else {
+            popularity = in.readDouble();
+        }
+        if (in.readByte() == 0) {
+            voteCount = null;
+        } else {
+            voteCount = in.readInt();
+        }
+        byte tmpVideo = in.readByte();
+        video = tmpVideo == 0 ? null : tmpVideo == 1;
+        posterPath = in.readString();
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readInt();
+        }
+        byte tmpAdult = in.readByte();
+        backdropPath = in.readString();
+        originalTitle = in.readString();
+        title = in.readString();
+        if (in.readByte() == 0) {
+            voteAverage = null;
+        } else {
+            voteAverage = in.readDouble();
+        }
+        overview = in.readString();
+        releaseDate = in.readString();
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (popularity == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(popularity);
+        }
+        if (voteCount == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(voteCount);
+        }
+        dest.writeByte((byte) (video == null ? 0 : video ? 1 : 2));
+        dest.writeString(posterPath);
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(id);
+        }
+        dest.writeString(backdropPath);
+        dest.writeString(originalTitle);
+        dest.writeString(title);
+        if (voteAverage == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(voteAverage);
+        }
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
     }
 }

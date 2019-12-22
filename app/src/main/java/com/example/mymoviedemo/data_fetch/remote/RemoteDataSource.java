@@ -19,12 +19,10 @@ import io.reactivex.schedulers.Schedulers;
 public class RemoteDataSource {
     private MovieApiInterface movieApiInterface;
     private Scheduler ioScheduler = Schedulers.io();
-    private LocalDataSource localDataSource;
 
     @Inject
-    public RemoteDataSource(MovieApiInterface movieApiInterface, LocalDataSource localDataSource) {
+    public RemoteDataSource(MovieApiInterface movieApiInterface) {
         this.movieApiInterface = movieApiInterface;
-        this.localDataSource = localDataSource;
     }
 
 
@@ -45,13 +43,6 @@ public class RemoteDataSource {
                         return movieListResult.getResults();
                     }
                 })
-                .doOnNext(new Consumer<List<Movie>>() {
-                    @Override
-                    public void accept(List<Movie> movies){
-                        //todo: data is not saved locally
-                        localDataSource.saveMovieList(movies);
-                    }
-                })
                 .subscribeOn(ioScheduler);
 
     }
@@ -59,11 +50,6 @@ public class RemoteDataSource {
 
     public Observable<MovieDetailResult> getMovieById(int movieId){
         Observable<MovieDetailResult> remoteData = movieApiInterface.getMovieDetailById(movieId);
-        return remoteData.doOnNext(new Consumer<MovieDetailResult>() {
-            @Override
-            public void accept(MovieDetailResult movieDetailResult) throws Exception {
-                localDataSource.saveMovieDetail(movieDetailResult);
-            }
-        }).subscribeOn(ioScheduler);
+        return remoteData.subscribeOn(ioScheduler);
     }
 }

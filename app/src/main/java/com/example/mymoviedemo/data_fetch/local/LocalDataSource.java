@@ -57,7 +57,7 @@ public class LocalDataSource {
             public MovieDetailResult call() throws Exception {
                 return movieDao.getMovieDetailById(movieId);
             }
-        });
+        }).subscribeOn(ioScheduler);
     }
 
     public void saveMovieList(final List<Movie> movies){
