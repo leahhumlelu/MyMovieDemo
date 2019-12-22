@@ -21,6 +21,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -65,6 +68,7 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         AndroidSupportInjection.inject(this);
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
         setupViews(view);
     }
 
@@ -100,16 +104,12 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
 
     private void isOnline(){
         mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
-        mViewModel.getMovieList(Util.SORT_BY_POPULAR)
-                .observe(this,
-                new Observer<PagedList<Movie>>() {
+        mViewModel.getMoviePagedList().observe(this, new Observer<PagedList<Movie>>() {
             @Override
-            public void onChanged(PagedList<Movie> moviePagedList) {
-                movieAdapter.submitList(moviePagedList);
+            public void onChanged(PagedList<Movie> movies) {
+                movieAdapter.submitList(movies);
             }
         });
-
-
         /*if(checkInternetConnection()){
             Log.d(TAG, "isOnline: true");
             warningLayout.setVisibility(View.GONE);
@@ -144,5 +144,27 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
                 MainPageFragmentDirections.actionMainPageFragmentToDetailPageFragment(movie);
         navController.navigate(action);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main_page_menu,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.main_page_movie_sort:
+                if(item.getTitle().equals(getResources().getString(R.string.sort_popular))){
+                    item.setTitle(getResources().getString(R.string.sort_top_rate));
+                    mViewModel.setSortLiveData(Util.SORT_BY_TOP_RATED);
+                }else{
+                    item.setTitle(getResources().getString(R.string.sort_popular));
+                    mViewModel.setSortLiveData(Util.SORT_BY_POPULAR);
+                }
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
