@@ -1,11 +1,13 @@
 package com.example.mymoviedemo.ui;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,10 +34,13 @@ import com.example.mymoviedemo.DetailPageViewModel;
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.ViewModelProviderFactory;
 import com.example.mymoviedemo.model.Movie;
-import com.example.mymoviedemo.model.MovieDetailResult;
+import com.example.mymoviedemo.model.MovieReview;
+import com.example.mymoviedemo.model.MovieTrailer;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -40,7 +48,7 @@ import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-public class DetailPageFragment extends Fragment {
+public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.ClickListener, MovieReviewAdapter.ClickListener {
     private static final String TAG = "DetailPageFragment";
     private DetailPageViewModel mViewModel;
     private AppBarLayout appBarLayout;
@@ -51,6 +59,9 @@ public class DetailPageFragment extends Fragment {
     private NavController navController;
     private Toolbar toolbar;
     private Movie movie;
+    private RecyclerView movieTrailersRv,movieReviewRv;
+    private MovieTrailerAdapter movieTrailerAdapter;
+    private MovieReviewAdapter movieReviewAdapter;
 
     @Inject
     public ViewModelProviderFactory factory;
@@ -69,6 +80,7 @@ public class DetailPageFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.detail_page_fragment, container, false);
     }
 
@@ -84,9 +96,56 @@ public class DetailPageFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if(movie!=null){
             updateUi(movie);
+            Rect scrollBounds = new Rect();
+
+            mViewModel = ViewModelProviders.of(this,factory).get(DetailPageViewModel.class);
+            mViewModel.getMovieTrailers(movie.getId()).subscribe(new Observer<List<MovieTrailer>>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(List<MovieTrailer> movieTrailers) {
+                    movieTrailerAdapter.setMovieTrailerList(movieTrailers);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+
+            mViewModel.getMovieReviews(movie.getId()).subscribe(new Observer<List<MovieReview>>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(List<MovieReview> movieReviews) {
+                    movieReviewAdapter.setMovieReviewList(movieReviews);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
         }
 
         // TODO: Use the ViewModel
+
     }
 
     private void updateUi(Movie movie) {
@@ -133,7 +192,6 @@ public class DetailPageFragment extends Fragment {
                 }else{
                     favoriteBtn2.setVisible(false);
                 }
-                //setHasOptionsMenu(favoriteBtnEnabled);
             }
         });
 
@@ -156,6 +214,17 @@ public class DetailPageFragment extends Fragment {
             }
         });
 
+        movieTrailersRv = view.findViewById(R.id.movie_detail_trailers_rv);
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+        movieTrailersRv.addItemDecoration(itemDecoration);
+        movieTrailerAdapter = new MovieTrailerAdapter(this);
+        movieTrailersRv.setAdapter(movieTrailerAdapter);
+
+        movieReviewRv = view.findViewById(R.id.movie_detail_reviews_rv);
+        movieReviewRv.addItemDecoration(itemDecoration);
+        movieReviewAdapter = new MovieReviewAdapter(this);
+        movieReviewRv.setAdapter(movieReviewAdapter);
+
 
     }
 
@@ -171,5 +240,25 @@ public class DetailPageFragment extends Fragment {
 
 
     private void switchFavorite() {
+    }
+
+    @Override
+    public void onClick(MovieTrailer movieTrailer) {
+        //todo: open a dialog to play from browser or youtube
+        Uri trailerUri = Uri.parse(BuildConfig.YOUTUBE_BASE_URL+movieTrailer.getKey());
+        Intent intent = new Intent(Intent.ACTION_VIEW,trailerUri);
+        Intent chooser = Intent.createChooser(intent,getResources().getString(R.string.intent_title));
+        if(chooser.resolveActivity(getActivity().getPackageManager())!=null){
+            startActivity(chooser);
+        }
+    }
+
+    @Override
+    public void onClick(MovieReview movieReview) {
+        Uri reviewUri = Uri.parse(movieReview.getUrl());
+        Intent intent = new Intent(Intent.ACTION_VIEW,reviewUri);
+        if(intent.resolveActivity(getActivity().getPackageManager())!=null){
+            startActivity(intent);
+        }
     }
 }

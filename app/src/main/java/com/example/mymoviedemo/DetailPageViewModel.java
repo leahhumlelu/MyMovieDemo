@@ -7,6 +7,11 @@ import androidx.paging.PagedList;
 import com.example.mymoviedemo.data_fetch.MovieListRepository;
 import com.example.mymoviedemo.model.Movie;
 import com.example.mymoviedemo.model.MovieDetailResult;
+import com.example.mymoviedemo.model.MovieReview;
+import com.example.mymoviedemo.model.MovieTrailer;
+import com.example.mymoviedemo.model.MovieTrailerResult;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -22,7 +27,14 @@ public class DetailPageViewModel extends ViewModel {
         this.movieListRepository = movieListRepository;
     }
 
-    public Observable<MovieDetailResult> getMovieDetailById(int movieId){
-        return movieListRepository.getMovieById(movieId).observeOn(AndroidSchedulers.mainThread());
+
+    public Observable<List<MovieTrailer>> getMovieTrailers(int movieId){
+        return movieListRepository.getMovieTrailers(movieId).observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<List<MovieReview>> getMovieReviews(int movieId){
+        return movieListRepository.getMovieReviews(movieId,1);
+    }
+
+
 }

@@ -6,4 +6,5 @@
     <dimen name="std_margin">8dp</dimen>
     <dimen name="movie_detail_poster_margin_top">50dp</dimen>
     <dimen name="nested_scroll_view_margin_top">28dp</dimen>
+    <dimen name="movie_label_ts">30sp</dimen>
 </resources>

@@ -7,6 +7,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.mymoviedemo.data_fetch.local.MovieDao;
 import com.example.mymoviedemo.model.Movie;
 import com.example.mymoviedemo.model.MovieDetailResult;
+import com.example.mymoviedemo.model.MovieReview;
+import com.example.mymoviedemo.model.MovieReviewResult;
+import com.example.mymoviedemo.model.MovieTrailer;
+import com.example.mymoviedemo.model.MovieTrailerResult;
 import com.example.mymoviedemo.utilities.Util;
 
 import java.util.List;
@@ -51,17 +55,26 @@ public class LocalDataSource {
     }
 
 
-    public Observable<MovieDetailResult> getMovieDetailById(final int movieId){
-        return Observable.fromCallable(new Callable<MovieDetailResult>() {
+    public Observable<List<MovieTrailer>> getMovieTrailersById(final int movieId){
+        return Observable.fromCallable(new Callable<List<MovieTrailer>>() {
             @Override
-            public MovieDetailResult call() throws Exception {
-                return movieDao.getMovieDetailById(movieId);
+            public List<MovieTrailer> call() throws Exception {
+                return movieDao.getMovieTrailersById(movieId);
             }
         }).subscribeOn(ioScheduler);
     }
 
-    public void saveMovieList(final List<Movie> movies){
-        Completable.fromRunnable(new Runnable() {
+    public Observable<List<MovieReview>> getMovieReviewsById(final int movieId){
+        return Observable.fromCallable(new Callable<List<MovieReview>>() {
+            @Override
+            public List<MovieReview> call() throws Exception {
+                return movieDao.getMovieReviewsById(movieId);
+            }
+        }).subscribeOn(ioScheduler);
+    }
+
+    public Completable saveMovieList(final List<Movie> movies){
+        return Completable.fromRunnable(new Runnable() {
             @Override
             public void run() {
                 movieDao.insertMovies(movies);
@@ -69,13 +82,30 @@ public class LocalDataSource {
         }).subscribeOn(ioScheduler);
     }
 
-    public void saveMovieDetail(final MovieDetailResult movieDetailResult){
-        Completable.fromRunnable(new Runnable() {
+
+    public Completable saveMovieTrailers(final List<MovieTrailer> movieTrailers, final long movieId){
+        return Completable.fromRunnable(new Runnable() {
             @Override
             public void run() {
-                movieDao.insertMovieDetail(movieDetailResult);
+                for(MovieTrailer movieTrailer:movieTrailers){
+                    movieTrailer.setMovieId(movieId);
+                }
+                movieDao.insertMovieTrailers(movieTrailers);
             }
-        }).subscribeOn(ioScheduler);
+        });
     }
+
+    public Completable saveMovieReviews(final List<MovieReview> movieReviews, final long movieId){
+        return Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                for(MovieReview movieReview:movieReviews){
+                    movieReview.setMovieId(movieId);
+                }
+                movieDao.insertMovieReviews(movieReviews);
+            }
+        });
+    }
+
 
 }
