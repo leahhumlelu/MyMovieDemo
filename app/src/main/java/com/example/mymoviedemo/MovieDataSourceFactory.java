@@ -12,13 +12,14 @@ import com.example.mymoviedemo.model.Movie;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class MovieDataSourceFactory extends DataSource.Factory<Integer, Movie> {
     public MovieDataSource movieDataSource;
     private MutableLiveData<MovieDataSource> movieDataSourceMutableLiveData;
 
-    public MovieDataSourceFactory(MovieListRepository movieListRepository,int sort) {
-        movieDataSource = new MovieDataSource(movieListRepository,sort);
+    public MovieDataSourceFactory(MovieListRepository movieListRepository, int sort, CompositeDisposable compositeDisposable) {
+        movieDataSource = new MovieDataSource(movieListRepository,sort,compositeDisposable);
         movieDataSourceMutableLiveData = new MutableLiveData<>();
     }
 
@@ -27,5 +28,9 @@ public class MovieDataSourceFactory extends DataSource.Factory<Integer, Movie> {
     public DataSource<Integer, Movie> create() {
         movieDataSourceMutableLiveData.postValue(movieDataSource);
         return movieDataSource;
+    }
+
+    public MutableLiveData<MovieDataSource> getMovieDataSourceMutableLiveData() {
+        return movieDataSourceMutableLiveData;
     }
 }

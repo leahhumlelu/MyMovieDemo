@@ -2,4 +2,8 @@
 <resources>
     <dimen name="vertical_std_margin">16dp</dimen>
     <dimen name="span_count">2</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="std_margin">8dp</dimen>
+    <dimen name="movie_detail_poster_margin_top">50dp</dimen>
+    <dimen name="nested_scroll_view_margin_top">28dp</dimen>
 </resources>

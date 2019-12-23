@@ -3,6 +3,7 @@ package com.example.mymoviedemo.di.viewmodel;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.mymoviedemo.DetailPageViewModel;
 import com.example.mymoviedemo.MainPageViewModel;
 import com.example.mymoviedemo.ViewModelProviderFactory;
 
@@ -19,4 +20,9 @@ public abstract class ViewModelModule {
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelProviderFactory factory);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DetailPageViewModel.class)
+    abstract ViewModel bindDetailPageViewModel(DetailPageViewModel detailPageViewModel);
 }

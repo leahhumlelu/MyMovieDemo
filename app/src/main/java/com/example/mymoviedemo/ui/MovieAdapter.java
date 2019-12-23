@@ -65,7 +65,7 @@ public class MovieAdapter extends PagedListAdapter<Movie,MovieAdapter.MovieViewH
                 clickListener.onClick(movie);
             }
         });
-        Uri moviePosterUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+movie.getPosterPath());
+        Uri moviePosterUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.POSTER_SIZE+movie.getPosterPath());
         Log.i(TAG, "onBindViewHolder: "+moviePosterUri);
         Glide.with(holder.itemView).load(moviePosterUri).into(holder.moviePosterIv);
     }

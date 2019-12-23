@@ -1,9 +1,12 @@
 package com.example.mymoviedemo.data_fetch.local;
 
+import android.telecom.Call;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.mymoviedemo.data_fetch.local.MovieDao;
 import com.example.mymoviedemo.model.Movie;
+import com.example.mymoviedemo.model.MovieDetailResult;
 import com.example.mymoviedemo.utilities.Util;
 
 import java.util.List;
@@ -28,7 +31,7 @@ public class LocalDataSource {
         this.movieDao = movieDao;
     }
 
-    public Observable<List<Movie>> getMovieList(int sort, final int loadSize) throws Exception {
+    public Observable<List<Movie>> getMovieList(int sort, final int loadSize){
         switch (sort){
             case Util.SORT_BY_TOP_RATED:
                 return Observable.fromCallable(new Callable<List<Movie>>() {
@@ -47,11 +50,30 @@ public class LocalDataSource {
         }
     }
 
+
+    public Observable<MovieDetailResult> getMovieDetailById(final int movieId){
+        return Observable.fromCallable(new Callable<MovieDetailResult>() {
+            @Override
+            public MovieDetailResult call() throws Exception {
+                return movieDao.getMovieDetailById(movieId);
+            }
+        }).subscribeOn(ioScheduler);
+    }
+
     public void saveMovieList(final List<Movie> movies){
         Completable.fromRunnable(new Runnable() {
             @Override
             public void run() {
                 movieDao.insertMovies(movies);
+            }
+        }).subscribeOn(ioScheduler);
+    }
+
+    public void saveMovieDetail(final MovieDetailResult movieDetailResult){
+        Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                movieDao.insertMovieDetail(movieDetailResult);
             }
         }).subscribeOn(ioScheduler);
     }

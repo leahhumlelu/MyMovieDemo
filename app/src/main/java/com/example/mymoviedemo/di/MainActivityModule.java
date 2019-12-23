@@ -16,7 +16,7 @@ public abstract class MainActivityModule {
     @ContributesAndroidInjector(modules = {ViewModelModule.class})
     abstract MainPageFragment contributeMainPageFragment();
 
-    @ContributesAndroidInjector(modules = {})
+    @ContributesAndroidInjector(modules = {ViewModelModule.class})
     abstract DetailPageFragment contributeDetailPageFragment();
 
     @ContributesAndroidInjector(modules = {})

@@ -32,12 +32,13 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Cache cache, RequestInterceptor requestInterceptor){
+    OkHttpClient provideOkHttpClient(Cache cache, ConnectivityInterceptor connectivityInterceptor,RequestInterceptor requestInterceptor){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.level(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
         httpClientBuilder.cache(cache)
                 .addInterceptor(logging)
+                .addInterceptor(connectivityInterceptor)
                 .addNetworkInterceptor(requestInterceptor);
         return httpClientBuilder.build();
     }
