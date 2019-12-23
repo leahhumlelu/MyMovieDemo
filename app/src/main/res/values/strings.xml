@@ -6,4 +6,5 @@
     <string name="sort_popular">Popular</string>
     <string name="sort_top_rate">Top rated</string>
     <string name="main_page_menu_description">change movie category</string>
+    <string name="error_fetching_data">Error in fetching data</string>
 </resources>

@@ -31,7 +31,7 @@ public class LocalDataSource {
         this.movieDao = movieDao;
     }
 
-    public Observable<List<Movie>> getMovieList(int sort, final int loadSize) throws Exception {
+    public Observable<List<Movie>> getMovieList(int sort, final int loadSize){
         switch (sort){
             case Util.SORT_BY_TOP_RATED:
                 return Observable.fromCallable(new Callable<List<Movie>>() {

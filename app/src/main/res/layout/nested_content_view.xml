@@ -25,15 +25,28 @@
                 android:layout_margin="@dimen/vertical_std_margin"
                 android:id="@+id/movie_detail_poster_iv">
             </ImageView>
-            <TextView
-                android:layout_margin="@dimen/vertical_std_margin"
-                android:id="@+id/movie_overview"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
-                tools:text="hello"
-                android:ellipsize="end"
-                android:maxLines="8"/>
+                android:orientation="vertical"
+                android:layout_margin="@dimen/vertical_std_margin">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Overview"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/std_margin">
+                </TextView>
+                <TextView
+                    android:id="@+id/movie_overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="hello"
+                    android:ellipsize="end"
+                    android:maxLines="8"/>
+            </LinearLayout>
+
         </LinearLayout>
         <View
             android:id="@+id/divider1"

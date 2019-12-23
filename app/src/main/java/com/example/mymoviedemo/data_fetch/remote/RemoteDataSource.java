@@ -26,7 +26,7 @@ public class RemoteDataSource {
     }
 
 
-    public Observable<List<Movie>> getMovieList(int sort, int page) throws Exception {
+    public Observable<List<Movie>> getMovieList(int sort, int page) {
         Observable<MovieListResult> remoteData;
         switch (sort){
             case Util.SORT_BY_TOP_RATED:

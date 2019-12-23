@@ -32,38 +32,33 @@ public class MovieListRepository {
     }
 
     public Observable<List<Movie>> getMovieList(final int sort, int page, final int loadSize){
-        try{
-            Observable<List<Movie>> remoteData = remoteDataSource.getMovieList(sort, page)
-                    .doOnNext(new Consumer<List<Movie>>() {
-                        @Override
-                        public void accept(List<Movie> movies){
-                            //todo: data is not saved locally
-                            localDataSource.saveMovieList(movies);
-                        }
-                    }).subscribeOn(ioScheduler);
-
-            Observable<List<Movie>> localData = localDataSource.getMovieList(sort, loadSize);
-            return Observable.zip(remoteData, localData, new BiFunction<List<Movie>, List<Movie>, List<Movie>>() {
-                @Override
-                public List<Movie> apply(List<Movie> movies, List<Movie> movies2) throws Exception {
-                    if(movies==null||movies.isEmpty()){
-                        return movies2;
-                    }else{
-                        return movies;
+        Observable<List<Movie>> remoteData = remoteDataSource.getMovieList(sort, page)
+                .doOnNext(new Consumer<List<Movie>>() {
+                    @Override
+                    public void accept(List<Movie> movies){
+                        //todo: data is not saved locally
+                        localDataSource.saveMovieList(movies);
                     }
+                }).subscribeOn(ioScheduler);
+
+        Observable<List<Movie>> localData = localDataSource.getMovieList(sort, loadSize);
+        return Observable.zip(remoteData, localData, new BiFunction<List<Movie>, List<Movie>, List<Movie>>() {
+            @Override
+            public List<Movie> apply(List<Movie> movies, List<Movie> movies2) {
+                //todo this function seems not working
+                if(movies==null||movies.isEmpty()){
+                    return movies2;
+                }else{
+                    return movies;
                 }
-            });
+            }
+        });
             /*return remoteData.publish(new Function<Observable<List<Movie>>, ObservableSource<List<Movie>>>() {
                 @Override
                 public ObservableSource<List<Movie>> apply(Observable<List<Movie>> listObservable) throws Exception {
                     return Observable.mergeDelayError(listObservable,localDataSource.getMovieList(sort, loadSize).takeUntil(listObservable));
                 }
             }).subscribeOn(Schedulers.io());*/
-        }catch (Exception e){
-            Log.d(TAG, "error in fetching movie list",e );
-            return null;
-        }
-
     }
 
     public Observable<MovieDetailResult> getMovieById(int movieId){
