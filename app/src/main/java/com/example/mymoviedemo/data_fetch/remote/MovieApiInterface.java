@@ -3,6 +3,8 @@ package com.example.mymoviedemo.data_fetch.remote;
 import com.example.mymoviedemo.model.Movie;
 import com.example.mymoviedemo.model.MovieDetailResult;
 import com.example.mymoviedemo.model.MovieListResult;
+import com.example.mymoviedemo.model.MovieReviewResult;
+import com.example.mymoviedemo.model.MovieTrailerResult;
 
 import java.util.List;
 
@@ -23,4 +25,10 @@ public interface MovieApiInterface {
 
     @GET("movie/{movie_id}?")
     Observable<MovieDetailResult> getMovieDetailById(@Path("movie_id") int movieId);
+
+    @GET("movie/{movie_id}/videos?")
+    Observable<MovieTrailerResult> getMovieTrailersById(@Path("movie_id") int movieId);
+
+    @GET("movie/{movie_id}/reviews?")
+    Observable<MovieReviewResult> getMovieReviewsById(@Path("movie_id") int movieId, @Query("page") int page);
 }

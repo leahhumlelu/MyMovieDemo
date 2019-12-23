@@ -4,6 +4,10 @@ import com.example.mymoviedemo.data_fetch.local.LocalDataSource;
 import com.example.mymoviedemo.model.Movie;
 import com.example.mymoviedemo.model.MovieDetailResult;
 import com.example.mymoviedemo.model.MovieListResult;
+import com.example.mymoviedemo.model.MovieReview;
+import com.example.mymoviedemo.model.MovieReviewResult;
+import com.example.mymoviedemo.model.MovieTrailer;
+import com.example.mymoviedemo.model.MovieTrailerResult;
 import com.example.mymoviedemo.utilities.Util;
 
 import java.util.List;
@@ -51,5 +55,35 @@ public class RemoteDataSource {
     public Observable<MovieDetailResult> getMovieById(int movieId){
         Observable<MovieDetailResult> remoteData = movieApiInterface.getMovieDetailById(movieId);
         return remoteData.subscribeOn(ioScheduler);
+    }
+
+    public Observable<List<MovieTrailer>> getMovieTrailersById(int movieId){
+        Observable<MovieTrailerResult> remoteData = movieApiInterface.getMovieTrailersById(movieId);
+        return remoteData
+                .map(new Function<MovieTrailerResult, List<MovieTrailer>>() {
+                    @Override
+                    public List<MovieTrailer> apply(MovieTrailerResult movieTrailerResult) {
+                        if(movieTrailerResult!=null){
+                            return movieTrailerResult.getMovieTrailers();
+                        }
+                        return null;
+                    }
+                })
+                .subscribeOn(ioScheduler);
+    }
+
+    public Observable<List<MovieReview>> getMovieReviewsById(int movieId, int page){
+        Observable<MovieReviewResult> remoteData = movieApiInterface.getMovieReviewsById(movieId,page);
+        return remoteData
+                .map(new Function<MovieReviewResult, List<MovieReview>>() {
+                    @Override
+                    public List<MovieReview> apply(MovieReviewResult movieReviewResult){
+                        if(movieReviewResult!=null){
+                            return movieReviewResult.getResults();
+                        }
+                        return null;
+                    }
+                })
+                .subscribeOn(ioScheduler);
     }
 }
