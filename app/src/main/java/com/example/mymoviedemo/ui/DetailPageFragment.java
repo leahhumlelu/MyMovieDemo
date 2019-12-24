@@ -113,18 +113,6 @@ public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.
                     movieTrailerAdapter.setMovieTrailerList(movieTrailers);
                 }
             });
-            mViewModel.getFavoriteLiveData().observe(this, new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer integer) {
-                    if(movie.getFavorite()==1){
-                        floatingActionButton.setImageResource(R.drawable.ic_favorite_black_24dp);
-                        favoriteBtn2.setIcon(R.drawable.ic_favorite_black_24dp);
-                    }else{
-                        floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                        favoriteBtn2.setIcon(R.drawable.ic_favorite_border_black_24dp);
-                    }
-                }
-            });
         }
         return rootView;
     }
@@ -147,6 +135,14 @@ public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.
 
             movieRateTv.setText(String.valueOf(movie.getVoteAverage()));
             movieReleaseDateTv.setText(movie.getReleaseDate());
+
+            if(movie.getFavorite()==1){
+                floatingActionButton.setImageResource(R.drawable.ic_favorite_black_24dp);
+                favoriteBtn2.setIcon(R.drawable.ic_favorite_black_24dp);
+            }else{
+                floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                favoriteBtn2.setIcon(R.drawable.ic_favorite_border_black_24dp);
+            }
 
         }
     }
@@ -174,7 +170,6 @@ public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                Log.i(TAG, "onOffsetChanged: veritical offset: "+verticalOffset);
                 if(Math.abs(verticalOffset) >=appBarLayout.getTotalScrollRange()-56){//appbar is fully collapsed
                     favoriteBtn2.setVisible(true);
                 }else{

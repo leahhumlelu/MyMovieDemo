@@ -55,8 +55,51 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_main);
         checkInternetPermission();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d(TAG, "onBackPressed: ");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "onRestart: ");
     }
 
     private void checkInternetPermission() {

@@ -153,7 +153,7 @@ public class MovieListRepository {
         });
     }
 
-    public Completable updateMovie(Movie movie){
+    public Observable<Integer> updateMovie(Movie movie){
         return localDataSource.updateMovie(movie);
     }
 
@@ -165,22 +165,7 @@ public class MovieListRepository {
         return remoteDataSource.getMovieById(movieId).doOnNext(new Consumer<Movie>() {
             @Override
             public void accept(Movie movie) throws Exception {
-                localDataSource.updateMovie(movie).subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "onComplete: update movie successfully");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-                });
+                localDataSource.updateMovie(movie);
             }
         });
     }

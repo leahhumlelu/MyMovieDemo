@@ -1,5 +1,7 @@
 package com.example.mymoviedemo.view_model;
 
+import android.util.Log;
+
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -22,6 +24,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class MainPageViewModel extends ViewModel {
     // TODO: Implement the ViewModel
+    private static final String TAG = "MainPageViewModel";
     private MovieListRepository movieListRepository;
     private LiveData<PagedList<Movie>> moviePagedList;
     private MutableLiveData<Integer> sortLiveData;
@@ -80,5 +83,6 @@ public class MainPageViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.dispose();
+        Log.d(TAG, "onCleared: ");
     }
 }

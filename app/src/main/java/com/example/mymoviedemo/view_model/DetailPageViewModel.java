@@ -84,7 +84,7 @@ public class DetailPageViewModel extends ViewModel {
 
     public void getMovieDetails(int movieId){
         getLocalMovieById(movieId);
-        getRemoteMovieById(movieId);
+        //getRemoteMovieById(movieId);
         getMovieReviews(movieId);
         getMovieTrailers(movieId);
     }
@@ -99,6 +99,7 @@ public class DetailPageViewModel extends ViewModel {
             @Override
             public void onNext(Movie movie) {
                 movieLiveData.postValue(movie);
+                Log.d(TAG, movie.getOriginalTitle()+" favorite: "+movie.getFavorite());
                 favoriteLiveData.postValue(movie.getFavorite());
             }
 
@@ -123,7 +124,7 @@ public class DetailPageViewModel extends ViewModel {
 
             @Override
             public void onNext(Movie movie) {
-
+                Log.d(TAG, "remote movie "+movie.getOriginalTitle()+" favorite: "+movie.getFavorite());
             }
 
             @Override
@@ -187,21 +188,28 @@ public class DetailPageViewModel extends ViewModel {
     }
 
 
-    private void updateMovie(Movie movie){
-        movieListRepository.updateMovie(movie).subscribe(new CompletableObserver() {
+    private void updateMovie(final Movie movie){
+        movieListRepository.updateMovie(movie).subscribe(new Observer<Integer>() {
             @Override
             public void onSubscribe(Disposable d) {
                 compositeDisposable.add(d);
             }
 
             @Override
-            public void onComplete() {
-                Log.d(TAG, "delete movie from db favorite successfully");
+            public void onNext(Integer integer) {
+                if(integer!=-1){
+                    movieLiveData.postValue(movie);
+                }
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "onError: delete movie from favorite");
+
+            }
+
+            @Override
+            public void onComplete() {
+
             }
         });
     }
