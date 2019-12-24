@@ -35,6 +35,7 @@ public class LocalDataSource {
         this.movieDao = movieDao;
     }
 
+
     public Observable<List<Movie>> getMovieList(int sort, final int loadSize){
         switch (sort){
             case Util.SORT_BY_TOP_RATED:
@@ -42,6 +43,13 @@ public class LocalDataSource {
                     @Override
                     public List<Movie> call() {
                         return movieDao.getTopRatedMovieList(loadSize);
+                    }
+                }).subscribeOn(ioScheduler);
+            case Util.SORT_FAVORITE:
+                return Observable.fromCallable(new Callable<List<Movie>>() {
+                    @Override
+                    public List<Movie> call() throws Exception {
+                        return movieDao.getFavoriteMovies();
                     }
                 }).subscribeOn(ioScheduler);
             default:
@@ -107,5 +115,23 @@ public class LocalDataSource {
         });
     }
 
+
+    public Completable updateMovie(final Movie movie){
+        return Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                movieDao.updateMovie(movie);
+            }
+        }).subscribeOn(ioScheduler);
+    }
+
+    public Observable<Movie> getMovieById(final int movieId) {
+        return Observable.fromCallable(new Callable<Movie>() {
+            @Override
+            public Movie call() throws Exception {
+                return movieDao.getMovieById(movieId);
+            }
+        }).subscribeOn(ioScheduler);
+    }
 
 }

@@ -52,8 +52,8 @@ public class RemoteDataSource {
     }
 
 
-    public Observable<MovieDetailResult> getMovieById(int movieId){
-        Observable<MovieDetailResult> remoteData = movieApiInterface.getMovieDetailById(movieId);
+    public Observable<Movie> getMovieById(int movieId){
+        Observable<Movie> remoteData = movieApiInterface.getMovieDetailById(movieId);
         return remoteData.subscribeOn(ioScheduler);
     }
 

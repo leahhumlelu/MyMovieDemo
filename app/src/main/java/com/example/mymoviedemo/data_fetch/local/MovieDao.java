@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.mymoviedemo.model.Movie;
 import com.example.mymoviedemo.model.MovieDetailResult;
@@ -32,6 +33,9 @@ public interface MovieDao {
     @Query("SELECT * FROM moviereview WHERE movieId = :movieId")
     List<MovieReview> getMovieReviewsById(int movieId);
 
+    @Query("SELECT * FROM movie WHERE favorite = 1")
+    List<Movie> getFavoriteMovies();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMovies(List<Movie> movies);
 
@@ -41,4 +45,10 @@ public interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMovieReviews(List<MovieReview> movieReviews);
+
+    @Query("SELECT * FROM Movie WHERE id= :movieId LIMIT 1")
+    Movie getMovieById(int movieId);
+
+    @Update
+    public void updateMovie(Movie movie);
 }

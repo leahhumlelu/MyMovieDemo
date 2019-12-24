@@ -37,9 +37,9 @@ public class ApiModule {
         logging.level(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
         httpClientBuilder.cache(cache)
-                .addInterceptor(logging)
                 .addInterceptor(connectivityInterceptor)
-                .addNetworkInterceptor(requestInterceptor);
+                .addInterceptor(requestInterceptor)
+                .addInterceptor(logging);
         return httpClientBuilder.build();
     }
 

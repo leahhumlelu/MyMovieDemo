@@ -10,14 +10,19 @@ import com.example.mymoviedemo.model.MovieReview;
 import com.example.mymoviedemo.model.MovieReviewResult;
 import com.example.mymoviedemo.model.MovieTrailer;
 import com.example.mymoviedemo.model.MovieTrailerResult;
+import com.example.mymoviedemo.utilities.Util;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -29,6 +34,7 @@ public class MovieListRepository {
     private RemoteDataSource remoteDataSource;
     private LocalDataSource localDataSource;
     private Scheduler ioScheduler = Schedulers.io();
+    private Scheduler mainScheduler = AndroidSchedulers.mainThread();
 
     @Inject
     public MovieListRepository(RemoteDataSource remoteDataSource, LocalDataSource localDataSource) {
@@ -36,39 +42,47 @@ public class MovieListRepository {
         this.localDataSource = localDataSource;
     }
 
+
     public Observable<List<Movie>> getMovieList(final int sort, int page, final int loadSize){
-        Observable<List<Movie>> remoteData = remoteDataSource.getMovieList(sort, page)
-                .doOnNext(new Consumer<List<Movie>>() {
+        switch (sort){
+            case Util
+                    .SORT_FAVORITE:
+                return localDataSource.getMovieList(sort, loadSize);
+            default:
+                Observable<List<Movie>> remoteData = remoteDataSource.getMovieList(sort, page)
+                        .doOnNext(new Consumer<List<Movie>>() {
+                            @Override
+                            public void accept(List<Movie> movies){
+                                //todo: data is not saved locally
+                                localDataSource.saveMovieList(movies).subscribe(new DisposableCompletableObserver() {
+                                    @Override
+                                    public void onComplete() {
+                                        Log.d(TAG, "onComplete: movie list has been saved to db successfully");
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.d(TAG, "onComplete: movie list are not saed to db. error" +e.getMessage());
+                                    }
+                                });
+                            }
+                        }).
+                                subscribeOn(ioScheduler);
+
+                Observable<List<Movie>> localData = localDataSource.getMovieList(sort, loadSize);
+                return Observable.zip(remoteData, localData, new BiFunction<List<Movie>, List<Movie>, List<Movie>>() {
                     @Override
-                    public void accept(List<Movie> movies){
-                        //todo: data is not saved locally
-                        localDataSource.saveMovieList(movies).subscribe(new DisposableCompletableObserver() {
-                            @Override
-                            public void onComplete() {
-                                Log.d(TAG, "onComplete: movie list has been saved to db successfully");
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.d(TAG, "onComplete: movie list are not saed to db. error" +e.getMessage());
-                            }
-                        });
+                    public List<Movie> apply(List<Movie> movies, List<Movie> movies2) {
+                        //todo this function seems not working
+                        if(movies==null||movies.isEmpty()){
+                            return movies2;
+                        }else{
+                            return movies;
+                        }
                     }
-                }).
-                        subscribeOn(ioScheduler);
+                });
+        }
 
-        Observable<List<Movie>> localData = localDataSource.getMovieList(sort, loadSize);
-        return Observable.zip(remoteData, localData, new BiFunction<List<Movie>, List<Movie>, List<Movie>>() {
-            @Override
-            public List<Movie> apply(List<Movie> movies, List<Movie> movies2) {
-                //todo this function seems not working
-                if(movies==null||movies.isEmpty()){
-                    return movies2;
-                }else{
-                    return movies;
-                }
-            }
-        });
             /*return remoteData.publish(new Function<Observable<List<Movie>>, ObservableSource<List<Movie>>>() {
                 @Override
                 public ObservableSource<List<Movie>> apply(Observable<List<Movie>> listObservable) throws Exception {
@@ -105,7 +119,7 @@ public class MovieListRepository {
                 }
                 return movieTrailers;
             }
-        });
+        }).observeOn(mainScheduler);
     }
 
     public Observable<List<MovieReview>> getMovieReviews(final int movieId, int page){
@@ -139,5 +153,35 @@ public class MovieListRepository {
         });
     }
 
+    public Completable updateMovie(Movie movie){
+        return localDataSource.updateMovie(movie);
+    }
 
+    public Observable<Movie> getLocalMovieById(int movieId) {
+        return localDataSource.getMovieById(movieId).subscribeOn(mainScheduler);
+    }
+
+    public Observable<Movie> getRemoteMovieById(int movieId) {
+        return remoteDataSource.getMovieById(movieId).doOnNext(new Consumer<Movie>() {
+            @Override
+            public void accept(Movie movie) throws Exception {
+                localDataSource.updateMovie(movie).subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: update movie successfully");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
+            }
+        });
+    }
 }

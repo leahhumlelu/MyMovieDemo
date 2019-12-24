@@ -1,4 +1,4 @@
-package com.example.mymoviedemo;
+package com.example.mymoviedemo.data_fetch;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;

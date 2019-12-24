@@ -1,4 +1,4 @@
-package com.example.mymoviedemo;
+package com.example.mymoviedemo.view_model;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
