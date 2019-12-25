@@ -26,5 +26,9 @@
         android:id="@+id/favoriteMoviesFragment"
         android:name="com.example.mymoviedemo.ui.FavoriteMoviesFragment"
         android:label="favorite_movies_fragment"
-        tools:layout="@layout/favorite_movies_fragment" />
+        tools:layout="@layout/favorite_movies_fragment" >
+        <action
+            android:id="@+id/action_favoriteMoviesFragment_to_detailPageFragment"
+            app:destination="@id/detailPageFragment" />
+    </fragment>
 </navigation>

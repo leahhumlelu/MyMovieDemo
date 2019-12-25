@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar"
+            app:toolbarId="@+id/detail_toolbar"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Large">
 
             <ImageView
@@ -54,7 +54,7 @@
         android:id="@+id/favorite_btn"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        android:src="@drawable/ic_favorite_border_black_24dp"/>
+        android:src="@drawable/ic_favorite_border_black_24dp" />
 
     <include layout="@layout/nested_content_view"/>
 

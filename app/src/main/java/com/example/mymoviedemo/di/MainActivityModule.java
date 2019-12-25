@@ -1,8 +1,5 @@
 package com.example.mymoviedemo.di;
 
-import com.example.mymoviedemo.DetailPageViewModel;
-import com.example.mymoviedemo.FavoriteMoviesViewModel;
-import com.example.mymoviedemo.MainPageViewModel;
 import com.example.mymoviedemo.di.viewmodel.ViewModelModule;
 import com.example.mymoviedemo.ui.DetailPageFragment;
 import com.example.mymoviedemo.ui.FavoriteMoviesFragment;
@@ -19,6 +16,6 @@ public abstract class MainActivityModule {
     @ContributesAndroidInjector(modules = {ViewModelModule.class})
     abstract DetailPageFragment contributeDetailPageFragment();
 
-    @ContributesAndroidInjector(modules = {})
+    @ContributesAndroidInjector(modules = {ViewModelModule.class})
     abstract FavoriteMoviesFragment contributeFavoriteMoviesFragment();
 }

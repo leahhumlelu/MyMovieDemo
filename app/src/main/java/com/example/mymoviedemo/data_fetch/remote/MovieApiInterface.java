@@ -24,7 +24,7 @@ public interface MovieApiInterface {
     Observable<MovieListResult> getTopRatedMovieList(@Query("page") int page);
 
     @GET("movie/{movie_id}?")
-    Observable<MovieDetailResult> getMovieDetailById(@Path("movie_id") int movieId);
+    Observable<Movie> getMovieDetailById(@Path("movie_id") int movieId);
 
     @GET("movie/{movie_id}/videos?")
     Observable<MovieTrailerResult> getMovieTrailersById(@Path("movie_id") int movieId);

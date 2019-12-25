@@ -3,7 +3,9 @@ package com.example.mymoviedemo.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Entity
 public class Movie implements Parcelable {
+    private int favorite;
     @SerializedName("popularity")
     @Expose
     private Double popularity;
@@ -52,6 +55,14 @@ public class Movie implements Parcelable {
     private String releaseDate;
 
     public Movie() {
+    }
+
+    public int getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(int favorite) {
+        this.favorite = favorite;
     }
 
     public Double getPopularity() {

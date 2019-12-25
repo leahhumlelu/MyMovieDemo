@@ -3,9 +3,10 @@ package com.example.mymoviedemo.di.viewmodel;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.mymoviedemo.DetailPageViewModel;
-import com.example.mymoviedemo.MainPageViewModel;
-import com.example.mymoviedemo.ViewModelProviderFactory;
+import com.example.mymoviedemo.view_model.DetailPageViewModel;
+import com.example.mymoviedemo.view_model.FavoriteMoviesViewModel;
+import com.example.mymoviedemo.view_model.MainPageViewModel;
+import com.example.mymoviedemo.view_model.ViewModelProviderFactory;
 
 import dagger.Binds;
 import dagger.Module;
@@ -25,4 +26,9 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(DetailPageViewModel.class)
     abstract ViewModel bindDetailPageViewModel(DetailPageViewModel detailPageViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FavoriteMoviesViewModel.class)
+    abstract ViewModel bindFavoriteViewModel(FavoriteMoviesViewModel favoriteMoviesViewModel);
 }

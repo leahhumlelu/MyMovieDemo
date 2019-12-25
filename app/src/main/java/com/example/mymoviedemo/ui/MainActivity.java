@@ -16,8 +16,11 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,13 +49,57 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private AppBarConfiguration appBarConfiguration;
     private BottomNavigationView bottomNavigationView;
     private static final int INTERNET_REQUEST_CODE = 12;
+    private static final int OPEN_SETTING_REQUEST_CODE = 13;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_main);
         checkInternetPermission();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d(TAG, "onBackPressed: ");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "onRestart: ");
     }
 
     private void checkInternetPermission() {
@@ -82,10 +129,25 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     setupNavigation();
                 }else{
-                    checkInternetPermission();
+                    openPermissionSetting();
                 }
             }
              return;
+        }
+    }
+
+    private void openPermissionSetting(){
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package",getPackageName(),null);
+        intent.setData(uri);
+        startActivityForResult(intent,OPEN_SETTING_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==OPEN_SETTING_REQUEST_CODE){
+            checkInternetPermission();
         }
     }
 

@@ -1,4 +1,6 @@
-package com.example.mymoviedemo;
+package com.example.mymoviedemo.view_model;
+
+import android.util.Log;
 
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
@@ -8,22 +10,21 @@ import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.example.mymoviedemo.data_fetch.MovieDataSource;
+import com.example.mymoviedemo.data_fetch.MovieDataSourceFactory;
 import com.example.mymoviedemo.data_fetch.MovieListRepository;
 import com.example.mymoviedemo.data_fetch.Status;
 import com.example.mymoviedemo.model.Movie;
-import com.example.mymoviedemo.model.MovieDetailResult;
 import com.example.mymoviedemo.utilities.Util;
 
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
 
 public class MainPageViewModel extends ViewModel {
     // TODO: Implement the ViewModel
+    private static final String TAG = "MainPageViewModel";
     private MovieListRepository movieListRepository;
     private LiveData<PagedList<Movie>> moviePagedList;
     private MutableLiveData<Integer> sortLiveData;
@@ -82,5 +83,6 @@ public class MainPageViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.dispose();
+        Log.d(TAG, "onCleared: ");
     }
 }
