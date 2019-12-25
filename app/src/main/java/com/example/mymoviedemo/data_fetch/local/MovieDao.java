@@ -34,7 +34,7 @@ public interface MovieDao {
     List<MovieReview> getMovieReviewsById(int movieId);
 
     @Query("SELECT * FROM movie WHERE favorite = 1")
-    List<Movie> getFavoriteMovies();
+    DataSource.Factory<Integer,Movie> getFavoriteMovies();
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     List<Long> insertMovies(List<Movie> movies);

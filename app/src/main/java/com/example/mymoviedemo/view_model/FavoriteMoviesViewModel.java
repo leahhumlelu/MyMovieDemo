@@ -28,14 +28,15 @@ public class FavoriteMoviesViewModel extends ViewModel {
     }
 
     public LiveData<PagedList<Movie>> getMovieList(int sort){
-        factory = new MovieDataSourceFactory(movieListRepository,sort,compositeDisposable);
+        moviePagedList = new LivePagedListBuilder<>(movieListRepository.getFavoriteMovies(),50).build();
+    /*    factory = new MovieDataSourceFactory(movieListRepository,sort,compositeDisposable);
         PagedList.Config pagedListConfig = new PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPageSize(20)
                 .build();
         moviePagedList = new LivePagedListBuilder<>(factory,pagedListConfig)
                 .setInitialLoadKey(1)
-                .build();
+                .build();*/
         /*initialLoadingState = Transformations.switchMap(factory.getMovieDataSourceMutableLiveData(), new Function<MovieDataSource, LiveData<Status>>() {
             @Override
             public LiveData<Status> apply(MovieDataSource movieDataSource) {

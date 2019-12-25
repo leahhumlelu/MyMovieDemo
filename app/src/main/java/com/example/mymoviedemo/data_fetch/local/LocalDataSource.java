@@ -4,6 +4,7 @@ import android.telecom.Call;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.DataSource;
 
 import com.example.mymoviedemo.data_fetch.local.MovieDao;
 import com.example.mymoviedemo.model.Movie;
@@ -47,13 +48,7 @@ public class LocalDataSource {
                         return movieDao.getTopRatedMovieList(loadSize);
                     }
                 }).subscribeOn(ioScheduler);
-            case Util.SORT_FAVORITE:
-                return Observable.fromCallable(new Callable<List<Movie>>() {
-                    @Override
-                    public List<Movie> call() throws Exception {
-                        return movieDao.getFavoriteMovies();
-                    }
-                }).subscribeOn(ioScheduler);
+
             default:
                 return Observable.fromCallable(new Callable<List<Movie>>() {
                     @Override
@@ -61,7 +56,19 @@ public class LocalDataSource {
                         return movieDao.getPopularMovieList(loadSize);
                     }
                 }).subscribeOn(ioScheduler);
+/*
+            case Util.SORT_FAVORITE:
+                return Observable.fromCallable(new Callable<List<Movie>>() {
+                    @Override
+                    public List<Movie> call() throws Exception {
+                        return movieDao.getFavoriteMovies();
+                    }
+                }).subscribeOn(ioScheduler);*/
         }
+    }
+
+    public DataSource.Factory<Integer,Movie> getFavoriteMovie(){
+        return movieDao.getFavoriteMovies();
     }
 
 

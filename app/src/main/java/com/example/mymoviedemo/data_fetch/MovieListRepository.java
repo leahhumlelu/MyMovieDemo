@@ -2,6 +2,8 @@ package com.example.mymoviedemo.data_fetch;
 
 import android.util.Log;
 
+import androidx.paging.DataSource;
+
 import com.example.mymoviedemo.data_fetch.local.LocalDataSource;
 import com.example.mymoviedemo.data_fetch.remote.RemoteDataSource;
 import com.example.mymoviedemo.model.Movie;
@@ -40,6 +42,10 @@ public class MovieListRepository {
     public MovieListRepository(RemoteDataSource remoteDataSource, LocalDataSource localDataSource) {
         this.remoteDataSource = remoteDataSource;
         this.localDataSource = localDataSource;
+    }
+
+    public DataSource.Factory<Integer,Movie> getFavoriteMovies(){
+        return localDataSource.getFavoriteMovie();
     }
 
 
