@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -163,15 +164,28 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
 
     }
 
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu: ");
+        MenuItem item = menu.findItem(R.id.main_page_movie_sort);
+        if(movie_sort==Util.SORT_BY_POPULAR){
+            item.setTitle(getResources().getString(R.string.sort_top_rate));
+        }else{
+            item.setTitle(getResources().getString(R.string.sort_popular));
+        }
+        super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        Log.d(TAG, "onCreateOptionsMenu: ");
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.main_page_menu,menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected: ");
         switch (item.getItemId()){
             case R.id.main_page_movie_sort:
                 if(item.getTitle().equals(getResources().getString(R.string.sort_popular))){
