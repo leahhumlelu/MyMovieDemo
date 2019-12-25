@@ -56,7 +56,6 @@
         app:layout_anchorGravity="bottom|end"
         android:src="@drawable/ic_favorite_border_black_24dp" />
 
-    <include layout="@layout/nested_content_view"/>
-
+    <include layout="@layout/nested_content_view" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

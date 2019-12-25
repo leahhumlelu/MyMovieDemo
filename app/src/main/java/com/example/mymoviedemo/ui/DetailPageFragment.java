@@ -44,7 +44,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.ClickListener, MovieReviewAdapter.ClickListener {
+public class DetailPageFragment extends Fragment implements MovieTrailerReviewAdapter.ClickListener  { //MovieTrailerAdapter.ClickListener, MovieReviewAdapter.ClickListener
     private static final String TAG = "DetailPageFragment";
     private DetailPageViewModel mViewModel;
     private AppBarLayout appBarLayout;
@@ -55,7 +55,8 @@ public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.
     private NavController navController;
     private Toolbar toolbar;
     private Movie movie,fetchedMovie;
-    private RecyclerView movieTrailersRv,movieReviewRv;
+    private RecyclerView movieTrailersRv,movieReviewRv,movieTrailerAndReviewRv;
+    private MovieTrailerReviewAdapter movieTrailerReviewAdapter;
     private MovieTrailerAdapter movieTrailerAdapter;
     private MovieReviewAdapter movieReviewAdapter;
     private MenuItem favoriteBtn2;
@@ -104,13 +105,15 @@ public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.
             mViewModel.getReviewsLiveData().observe(this, new Observer<List<MovieReview>>() {
                 @Override
                 public void onChanged(List<MovieReview> movieReviews) {
-                    movieReviewAdapter.setMovieReviewList(movieReviews);
+                    //movieReviewAdapter.setMovieReviews(movieReviews);
+                    movieTrailerReviewAdapter.setMovieReviews(movieReviews);
                 }
             });
             mViewModel.getTrailerLiveData().observe(this, new Observer<List<MovieTrailer>>() {
                 @Override
                 public void onChanged(List<MovieTrailer> movieTrailers) {
-                    movieTrailerAdapter.setMovieTrailerList(movieTrailers);
+                    //movieTrailerAdapter.setMovieTrailers(movieTrailers);
+                    movieTrailerReviewAdapter.setMovieTrailers(movieTrailers);
                 }
             });
         }
@@ -197,7 +200,7 @@ public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.
             }
         });
 
-        movieTrailersRv = view.findViewById(R.id.movie_detail_trailers_rv);
+        /*movieTrailersRv = view.findViewById(R.id.movie_detail_trailers_rv);
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
         movieTrailersRv.addItemDecoration(itemDecoration);
         movieTrailerAdapter = new MovieTrailerAdapter(this);
@@ -206,7 +209,14 @@ public class DetailPageFragment extends Fragment implements MovieTrailerAdapter.
         movieReviewRv = view.findViewById(R.id.movie_detail_reviews_rv);
         movieReviewRv.addItemDecoration(itemDecoration);
         movieReviewAdapter = new MovieReviewAdapter(this);
-        movieReviewRv.setAdapter(movieReviewAdapter);
+        movieReviewRv.setAdapter(movieReviewAdapter);*/
+
+
+        movieTrailerAndReviewRv = view.findViewById(R.id.movie_detail_trailer_review_rv);
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+        movieTrailerAndReviewRv.addItemDecoration(itemDecoration);
+        movieTrailerReviewAdapter = new MovieTrailerReviewAdapter(getContext(),this);
+        movieTrailerAndReviewRv.setAdapter(movieTrailerReviewAdapter);
 
     }
 
