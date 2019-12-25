@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <com.example.mymoviedemo.ui.AutofitRecyclerView
             android:id="@+id/favorite_movie_list_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

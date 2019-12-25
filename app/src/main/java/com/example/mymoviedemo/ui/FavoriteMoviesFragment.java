@@ -70,9 +70,7 @@ public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.Cli
 
     private void setUpViews(View view) {
         favoriteMovieRv = view.findViewById(R.id.favorite_movie_list_rv);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
-        favoriteMovieRv.setLayoutManager(layoutManager);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),layoutManager.getOrientation());
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),GridLayoutManager.VERTICAL);
         favoriteMovieRv.addItemDecoration(itemDecoration);
         movieAdapter = new MovieAdapter(this);
         favoriteMovieRv.setAdapter(movieAdapter);

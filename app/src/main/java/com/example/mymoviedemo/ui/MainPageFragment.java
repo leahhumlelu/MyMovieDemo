@@ -91,9 +91,9 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
 
     private void setupViews(View view){
         movieListRv = view.findViewById(R.id.movie_list_rv);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
-        movieListRv.setLayoutManager(layoutManager);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),layoutManager.getOrientation());
+/*        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
+        movieListRv.setLayoutManager(layoutManager);*/
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),GridLayoutManager.VERTICAL);
         movieListRv.addItemDecoration(itemDecoration);
         movieAdapter = new MovieAdapter(this);
         movieListRv.setAdapter(movieAdapter);

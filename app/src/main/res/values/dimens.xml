@@ -7,4 +7,5 @@
     <dimen name="movie_detail_poster_margin_top">50dp</dimen>
     <dimen name="nested_scroll_view_margin_top">28dp</dimen>
     <dimen name="movie_label_ts">30sp</dimen>
+    <dimen name="column_width">154dp</dimen>
 </resources>

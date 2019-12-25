@@ -3,12 +3,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/main"
-            android:icon="@drawable/ic_launcher_background"
+            android:icon="@drawable/ic_movie_filter_black_24dp"
             android:title="Movies">
         </item>
         <item
             android:id="@+id/favorites"
-            android:icon="@drawable/ic_launcher_background"
+            android:icon="@drawable/ic_favorite_black_24dp"
             android:title="Favorite Movies">
         </item>
     </group>
