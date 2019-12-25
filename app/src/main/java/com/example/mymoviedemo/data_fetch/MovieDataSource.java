@@ -2,8 +2,11 @@ package com.example.mymoviedemo.data_fetch;
 
 
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PageKeyedDataSource;
 
@@ -17,10 +20,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
     private static final String TAG = "MovieDataSource";
@@ -29,6 +36,7 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
     private MutableLiveData<Status> initialLoading;
     private int sort;
     private CompositeDisposable compositeDisposable;
+    private Completable retryCompletable;
 
     public MovieDataSource(MovieListRepository movieListRepository, int sort, CompositeDisposable compositeDisposable) {
         this.movieListRepository = movieListRepository;
@@ -38,17 +46,45 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
         initialLoading = new MutableLiveData();
     }
 
-    public MutableLiveData getNetworkState() {
+    public LiveData<Status> getNetworkState() {
         return networkState;
     }
 
-    public MutableLiveData getInitialLoading() {
+    public LiveData<Status> getInitialLoading() {
         return initialLoading;
+    }
+
+    public void retry(){
+        if(retryCompletable!=null){
+            compositeDisposable.add(retryCompletable
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action() {
+                        @Override
+                        public void run() throws Exception {
+
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            Log.e(TAG, throwable.getMessage());
+                        }
+                    })
+            );
+        }
+    }
+
+    private void setRetry(final Action action){
+        if(action==null){
+            this.retryCompletable=null;
+        }else{
+            this.retryCompletable = Completable.fromAction(action);
+        }
     }
 
 
     @Override
-    public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull final LoadInitialCallback<Integer, Movie> callback) {
+    public void loadInitial(@NonNull final LoadInitialParams<Integer> params, @NonNull final LoadInitialCallback<Integer, Movie> callback) {
         final int start_page =1;
         networkState.postValue(Status.LOADING);
         initialLoading.postValue(Status.LOADING);
@@ -60,6 +96,7 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
 
             @Override
             public void onNext(List<Movie> movies) {
+                setRetry(null);
                 networkState.postValue(Status.SUCCESS);
                 initialLoading.postValue(Status.SUCCESS);
                 callback.onResult(movies,null,start_page+1);
@@ -67,6 +104,12 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
 
             @Override
             public void onError(Throwable e) {
+                setRetry(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        loadInitial(params,callback);
+                    }
+                });
                 if(e instanceof NoConnectivityException){
                     networkState.postValue(Status.NO_INTERNET);
                     initialLoading.postValue(Status.NO_INTERNET);
@@ -103,12 +146,19 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
 
                     @Override
                     public void onNext(List<Movie> movies) {
+                        setRetry(null);
                         networkState.postValue(Status.SUCCESS);
                         callback.onResult(movies,params.key+1);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        setRetry(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                loadAfter(params, callback);
+                            }
+                        });
                         if(e instanceof NoConnectivityException){
                             networkState.postValue(Status.NO_INTERNET);
                         }else{

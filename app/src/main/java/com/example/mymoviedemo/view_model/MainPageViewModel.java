@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.example.mymoviedemo.data_fetch.MovieDataSource;
 import com.example.mymoviedemo.data_fetch.MovieDataSourceFactory;
 import com.example.mymoviedemo.data_fetch.MovieListRepository;
 import com.example.mymoviedemo.data_fetch.Status;
@@ -23,7 +24,6 @@ import io.reactivex.disposables.CompositeDisposable;
 
 
 public class MainPageViewModel extends ViewModel {
-    // TODO: Implement the ViewModel
     private static final String TAG = "MainPageViewModel";
     private MovieListRepository movieListRepository;
     private LiveData<PagedList<Movie>> moviePagedList;
@@ -38,22 +38,16 @@ public class MainPageViewModel extends ViewModel {
         this.movieListRepository = movieListRepository;
         sortLiveData = new MutableLiveData<>();
         initialLoadingState = new MutableLiveData<>();
+        networkState = new MutableLiveData<>();
         sortLiveData.postValue(Util.SORT_BY_POPULAR);
-        moviePagedList = Transformations.switchMap(sortLiveData, new Function<Integer, LiveData<PagedList<Movie>>>() {
-            @Override
-            public LiveData<PagedList<Movie>> apply(Integer input) {
-                return getMovieList(input);
-            }
-        });
-
     }
 
     public void setSortLiveData(int sort) {
         sortLiveData.postValue(sort);
     }
 
-    public LiveData<PagedList<Movie>> getMoviePagedList() {
-        return moviePagedList;
+    public MutableLiveData<Integer> getSortLiveData() {
+        return sortLiveData;
     }
 
     public LiveData<PagedList<Movie>> getMovieList(int sort){
@@ -65,18 +59,32 @@ public class MainPageViewModel extends ViewModel {
         moviePagedList = new LivePagedListBuilder<>(factory,pagedListConfig)
                 .setInitialLoadKey(1)
                 .build();
-        /*initialLoadingState = Transformations.switchMap(factory.getMovieDataSourceMutableLiveData(), new Function<MovieDataSource, LiveData<Status>>() {
+        initialLoadingState = Transformations.switchMap(factory.getMovieDataSourceMutableLiveData(), new Function<MovieDataSource, LiveData<Status>>() {
             @Override
-            public LiveData<Status> apply(MovieDataSource movieDataSource) {
-                return movieDataSource.getInitialLoading();
+            public LiveData<Status> apply(MovieDataSource input) {
+                return input.getInitialLoading();
             }
-        });*/
+        });
 
+        networkState = Transformations.switchMap(factory.getMovieDataSourceMutableLiveData(), new Function<MovieDataSource, LiveData<Status>>() {
+            @Override
+            public LiveData<Status> apply(MovieDataSource input) {
+                return input.getNetworkState();
+            }
+        });
         return moviePagedList;
     }
 
     public LiveData<Status> getInitialLoadingState(){
         return initialLoadingState;
+    }
+
+    public LiveData<Status> getNetworkState() {
+        return networkState;
+    }
+
+    public void retry(){
+        factory.movieDataSource.retry();
     }
 
     @Override

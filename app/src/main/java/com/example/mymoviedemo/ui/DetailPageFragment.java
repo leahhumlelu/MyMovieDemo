@@ -54,13 +54,14 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
     private FloatingActionButton floatingActionButton;
     private NavController navController;
     private Toolbar toolbar;
-    private Movie movie,fetchedMovie;
+    private Movie fetchedMovie;
     private RecyclerView movieTrailersRv,movieReviewRv,movieTrailerAndReviewRv;
     private MovieTrailerReviewAdapter movieTrailerReviewAdapter;
     private MovieTrailerAdapter movieTrailerAdapter;
     private MovieReviewAdapter movieReviewAdapter;
     private MenuItem favoriteBtn2;
-    public static final String MOVIE_ARGUMENT_KEY = "movie_argument_key";
+    private static final String MOVIE_ARGUMENT_KEY = "movie_argument_key";
+    private int movieId;
 
     @Inject
     public ViewModelProviderFactory factory;
@@ -74,9 +75,9 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         if(savedInstanceState==null){
-            movie = DetailPageFragmentArgs.fromBundle(getArguments()).getMovie();
+            movieId = DetailPageFragmentArgs.fromBundle(getArguments()).getMovieId();
         }else{
-            movie = savedInstanceState.getParcelable(MOVIE_ARGUMENT_KEY);
+            movieId = savedInstanceState.getParcelable(MOVIE_ARGUMENT_KEY);
         }
 
     }
@@ -84,7 +85,7 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(MOVIE_ARGUMENT_KEY,movie);
+        outState.putInt(MOVIE_ARGUMENT_KEY,movieId);
     }
 
     @Override
@@ -92,9 +93,9 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.detail_page_fragment, container, false);
         setupViews(rootView);
-        if(movie!=null){
+        if(movieId!=0){
             mViewModel = ViewModelProviders.of(this,factory).get(DetailPageViewModel.class);
-            mViewModel.getMovieDetails(movie.getId());
+            mViewModel.getMovieDetails(movieId);
             mViewModel.getMovieLiveData().observe(this, new Observer<Movie>() {
                 @Override
                 public void onChanged(Movie movie) {

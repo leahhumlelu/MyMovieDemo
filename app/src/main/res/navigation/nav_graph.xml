@@ -19,8 +19,8 @@
         android:name="com.example.mymoviedemo.ui.DetailPageFragment"
         tools:layout="@layout/detail_page_fragment" >
         <argument
-            android:name="movie"
-            app:argType="com.example.mymoviedemo.model.Movie" />
+            android:name="movieId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/favoriteMoviesFragment"

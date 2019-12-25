@@ -27,7 +27,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.example.mymoviedemo.data_fetch.Status;
 import com.example.mymoviedemo.view_model.MainPageViewModel;
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.view_model.ViewModelProviderFactory;
@@ -61,18 +63,18 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
     public void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
-        if(savedInstanceState!=null){
+        /*if(savedInstanceState!=null){
             movie_sort = savedInstanceState.getInt(PREFERENCE_SORT_KEY);
         }else{
             movie_sort = Util.SORT_BY_POPULAR;
-        }
+        }*/
     }
 
-    @Override
+  /*  @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(PREFERENCE_SORT_KEY,movie_sort);
-    }
+    }*/
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -90,9 +92,8 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
     }
 
     private void setupViews(View view){
+        mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
         movieListRv = view.findViewById(R.id.movie_list_rv);
-/*        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
-        movieListRv.setLayoutManager(layoutManager);*/
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),GridLayoutManager.VERTICAL);
         movieListRv.addItemDecoration(itemDecoration);
         movieAdapter = new MovieAdapter(this);
@@ -102,64 +103,84 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
         retryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchData();
+                mViewModel.retry();
             }
         });
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         navController = Navigation.findNavController(getActivity(),R.id.nav_host_fragment);
         loadingProgressBar = view.findViewById(R.id.loading_progress_bar);
+
     }
 
 
     private void fetchData(){
-        mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
-        mViewModel.setSortLiveData(movie_sort);
-        mViewModel.getMoviePagedList().observe(this, new Observer<PagedList<Movie>>() {
+        mViewModel.getSortLiveData().observe(this, new Observer<Integer>() {
             @Override
-            public void onChanged(PagedList<Movie> movies) {
-                movieAdapter.submitList(movies);
+            public void onChanged(Integer integer) {
+                movie_sort = integer;
+                mViewModel.getMovieList(integer).observe(getViewLifecycleOwner(), new Observer<PagedList<Movie>>() {
+                    @Override
+                    public void onChanged(PagedList<Movie> moviePagedList) {
+                        movieAdapter.submitList(moviePagedList);
+                    }
+                });
+                mViewModel.getInitialLoadingState().observe(getViewLifecycleOwner(), new Observer<Status>() {
+                    @Override
+                    public void onChanged(Status status) {
+                        switch (status){
+                            case LOADING:
+                                loadingProgressBar.setVisibility(View.VISIBLE);
+                                warningLayout.setVisibility(View.GONE);
+                                break;
+                            case NO_INTERNET:
+                                loadingProgressBar.setVisibility(View.GONE);
+                                warningLayout.setVisibility(View.VISIBLE);
+                                break;
+                            case SUCCESS:
+                                loadingProgressBar.setVisibility(View.GONE);
+                                warningLayout.setVisibility(View.GONE);
+                                break;
+                            case ERROR:
+                                loadingProgressBar.setVisibility(View.GONE);
+                                warningLayout.setVisibility(View.GONE);
+                                Toast.makeText(getContext(),getResources().getString(R.string.error_fetching_data),Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                });
+                mViewModel.getNetworkState().observe(getViewLifecycleOwner(), new Observer<Status>() {
+                    @Override
+                    public void onChanged(Status status) {
+                        switch (status){
+                            case LOADING:
+                                loadingProgressBar.setVisibility(View.VISIBLE);
+                                warningLayout.setVisibility(View.GONE);
+                                break;
+                            case NO_INTERNET:
+                                loadingProgressBar.setVisibility(View.GONE);
+                                warningLayout.setVisibility(View.VISIBLE);
+                                break;
+                            case SUCCESS:
+                                loadingProgressBar.setVisibility(View.GONE);
+                                warningLayout.setVisibility(View.GONE);
+                                break;
+                            case ERROR:
+                                loadingProgressBar.setVisibility(View.GONE);
+                                warningLayout.setVisibility(View.GONE);
+                                Toast.makeText(getContext(),getResources().getString(R.string.error_fetching_data),Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                });
             }
         });
-        /*mViewModel.getInitialLoadingState().observe(this, new Observer<Status>() {
-            @Override
-            public void onChanged(Status status) {
-                switch (status){
-                    case LOADING:
-                        loadingProgressBar.setVisibility(View.VISIBLE);
-                        warningLayout.setVisibility(View.GONE);
-                        break;
-                    case NO_INTERNET:
-                        loadingProgressBar.setVisibility(View.GONE);
-                        warningLayout.setVisibility(View.VISIBLE);
-                        break;
-                    case SUCCESS:
-                        loadingProgressBar.setVisibility(View.GONE);
-                        warningLayout.setVisibility(View.GONE);
-                        break;
-                    case ERROR:
-                        loadingProgressBar.setVisibility(View.GONE);
-                        warningLayout.setVisibility(View.GONE);
-                        Toast.makeText(getContext(),getResources().getString(R.string.error_fetching_data),Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        });*/
-        /*if(checkInternetConnection()){
-            Log.d(TAG, "fetchData: true");
-            warningLayout.setVisibility(View.GONE);
-
-        }else{
-            Log.d(TAG, "fetchData: false");
-            warningLayout.setVisibility(View.VISIBLE);
-        }*/
 
     }
 
     @Override
     public void onClick(Movie movie) {
-        //navController.navigate(R.id.action_mainPageFragment_to_detailPageFragment);
         MainPageFragmentDirections.ActionMainPageFragmentToDetailPageFragment action =
-                MainPageFragmentDirections.actionMainPageFragmentToDetailPageFragment(movie);
+                MainPageFragmentDirections.actionMainPageFragmentToDetailPageFragment(movie.getId());
         navController.navigate(action);
 
     }

@@ -79,7 +79,7 @@ public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.Cli
 
     @Override
     public void onClick(Movie movie) {
-        FavoriteMoviesFragmentDirections.ActionFavoriteMoviesFragmentToDetailPageFragment action = FavoriteMoviesFragmentDirections.actionFavoriteMoviesFragmentToDetailPageFragment(movie);
+        FavoriteMoviesFragmentDirections.ActionFavoriteMoviesFragmentToDetailPageFragment action = FavoriteMoviesFragmentDirections.actionFavoriteMoviesFragmentToDetailPageFragment(movie.getId());
         navController.navigate(action);
     }
 }
