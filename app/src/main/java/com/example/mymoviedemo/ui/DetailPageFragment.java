@@ -1,6 +1,7 @@
 package com.example.mymoviedemo.ui;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mymoviedemo.BuildConfig;
+import com.example.mymoviedemo.databinding.DetailPageFragmentBinding;
 import com.example.mymoviedemo.view_model.DetailPageViewModel;
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.view_model.ViewModelProviderFactory;
@@ -62,6 +64,7 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
     private MenuItem favoriteBtn2;
     private static final String MOVIE_ARGUMENT_KEY = "movie_argument_key";
     private int movieId;
+    private DetailPageFragmentBinding binding;
 
     @Inject
     public ViewModelProviderFactory factory;
@@ -91,60 +94,65 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater,R.layout.detail_page_fragment,container,false);
         View rootView = inflater.inflate(R.layout.detail_page_fragment, container, false);
-        setupViews(rootView);
+        setupViews(binding.getRoot());
+
         if(movieId!=0){
-            mViewModel = ViewModelProviders.of(this,factory).get(DetailPageViewModel.class);
-            mViewModel.getMovieDetails(movieId);
-            mViewModel.getMovieLiveData().observe(this, new Observer<Movie>() {
-                @Override
-                public void onChanged(Movie movie) {
-                    fetchedMovie = movie;
-                    updateUi(movie);
-                }
-            });
-            mViewModel.getReviewsLiveData().observe(this, new Observer<List<MovieReview>>() {
-                @Override
-                public void onChanged(List<MovieReview> movieReviews) {
-                    //movieReviewAdapter.setMovieReviews(movieReviews);
-                    movieTrailerReviewAdapter.setMovieReviews(movieReviews);
-                }
-            });
-            mViewModel.getTrailerLiveData().observe(this, new Observer<List<MovieTrailer>>() {
-                @Override
-                public void onChanged(List<MovieTrailer> movieTrailers) {
-                    //movieTrailerAdapter.setMovieTrailers(movieTrailers);
-                    movieTrailerReviewAdapter.setMovieTrailers(movieTrailers);
-                }
-            });
+            fetchData(movieId);
         }
-        return rootView;
+        return binding.getRoot();
+    }
+
+    public void fetchData(int movieId){
+        mViewModel.getMovieDetails(movieId);
+        mViewModel.getMovieLiveData().observe(this, new Observer<Movie>() {
+            @Override
+            public void onChanged(Movie movie) {
+                fetchedMovie = movie;
+                updateUi(movie);
+            }
+        });
+        mViewModel.getReviewsLiveData().observe(this, new Observer<List<MovieReview>>() {
+            @Override
+            public void onChanged(List<MovieReview> movieReviews) {
+                //movieReviewAdapter.setMovieReviews(movieReviews);
+                movieTrailerReviewAdapter.setMovieReviews(movieReviews);
+            }
+        });
+        mViewModel.getTrailerLiveData().observe(this, new Observer<List<MovieTrailer>>() {
+            @Override
+            public void onChanged(List<MovieTrailer> movieTrailers) {
+                //movieTrailerAdapter.setMovieTrailers(movieTrailers);
+                movieTrailerReviewAdapter.setMovieTrailers(movieTrailers);
+            }
+        });
     }
 
     private void updateUi(Movie movie) {
         if(movie!=null){
-            collapsingToolbarLayout.setTitle(movie.getOriginalTitle());
-            collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.white));
-            collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.white));
+            binding.collapsingToolbarLayout.setTitle(movie.getOriginalTitle());
+            binding.collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.white));
+            binding.collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.white));
 
             Uri movieBackdropUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.BACKDROP_SIZE+movie.getBackdropPath());
             Log.i(TAG, "BACKGROUP URI "+movieBackdropUri);
-            Glide.with(getContext()).load(movieBackdropUri).into(movieIv);
+            Glide.with(getContext()).load(movieBackdropUri).into(binding.movieImage);
 
-            movieOverview.setText(movie.getOverview());
+            binding.nestedScrollView.movieOverview.setText(movie.getOverview());
 
             Uri moviePosterUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.POSTER_SIZE+movie.getPosterPath());
             Log.i(TAG, "poster URI "+moviePosterUri);
-            Glide.with(getContext()).load(moviePosterUri).into(moviePosterIv);
+            Glide.with(getContext()).load(moviePosterUri).into(binding.nestedScrollView.movieDetailPosterIv);
 
-            movieRateTv.setText(String.valueOf(movie.getVoteAverage()));
-            movieReleaseDateTv.setText(movie.getReleaseDate());
+            binding.nestedScrollView.rateTv.setText(String.valueOf(movie.getVoteAverage()));
+            binding.nestedScrollView.releaseDateTv.setText(movie.getReleaseDate());
 
             if(movie.getFavorite()==1){
-                floatingActionButton.setImageResource(R.drawable.ic_favorite_black_24dp);
+                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                 favoriteBtn2.setIcon(R.drawable.ic_favorite_black_24dp);
             }else{
-                floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                 favoriteBtn2.setIcon(R.drawable.ic_favorite_border_black_24dp);
             }
 
@@ -153,9 +161,49 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
 
 
     private void setupViews(View view) {
+        mViewModel = ViewModelProviders.of(this,factory).get(DetailPageViewModel.class);
         navController = Navigation.findNavController(getActivity(),R.id.nav_host_fragment);
-        toolbar = view.findViewById(R.id.detail_toolbar);
+        binding.setDetailVM(mViewModel);
+        binding.setLifecycleOwner(this);
+        binding.detailToolbar.inflateMenu(R.menu.detail_page_menu);
+        favoriteBtn2 = binding.detailToolbar.getMenu().findItem(R.id.favorite_btn_2);
+        favoriteBtn2.setVisible(false);
+        NavigationUI.setupWithNavController(binding.collapsingToolbarLayout,binding.detailToolbar,navController);
+        binding.appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if(Math.abs(verticalOffset) >=binding.appBar.getTotalScrollRange()-56){//appbar is fully collapsed
+                    favoriteBtn2.setVisible(true);
+                }else{
+                    favoriteBtn2.setVisible(false);
+                }
+            }
+        });
+        binding.favoriteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchFavorite();
+            }
+        });
 
+        binding.detailToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.favorite_btn_2:
+                        switchFavorite();
+                        return true;
+                }
+                return false;
+            }
+        });
+        movieTrailerAndReviewRv = view.findViewById(R.id.movie_detail_trailer_review_rv);
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+        binding.nestedScrollView.movieDetailTrailerReviewRv.addItemDecoration(itemDecoration);
+        movieTrailerReviewAdapter = new MovieTrailerReviewAdapter(getContext(),this);
+        movieTrailerAndReviewRv.setAdapter(movieTrailerReviewAdapter);
+
+        /*toolbar = view.findViewById(R.id.detail_toolbar);
         toolbar.inflateMenu(R.menu.detail_page_menu);
 
         favoriteBtn2 = toolbar.getMenu().findItem(R.id.favorite_btn_2);
@@ -199,25 +247,10 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
                 }
                 return false;
             }
-        });
-
-        /*movieTrailersRv = view.findViewById(R.id.movie_detail_trailers_rv);
-        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
-        movieTrailersRv.addItemDecoration(itemDecoration);
-        movieTrailerAdapter = new MovieTrailerAdapter(this);
-        movieTrailersRv.setAdapter(movieTrailerAdapter);
-
-        movieReviewRv = view.findViewById(R.id.movie_detail_reviews_rv);
-        movieReviewRv.addItemDecoration(itemDecoration);
-        movieReviewAdapter = new MovieReviewAdapter(this);
-        movieReviewRv.setAdapter(movieReviewAdapter);*/
+        });*/
 
 
-        movieTrailerAndReviewRv = view.findViewById(R.id.movie_detail_trailer_review_rv);
-        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
-        movieTrailerAndReviewRv.addItemDecoration(itemDecoration);
-        movieTrailerReviewAdapter = new MovieTrailerReviewAdapter(getContext(),this);
-        movieTrailerAndReviewRv.setAdapter(movieTrailerReviewAdapter);
+
 
     }
 

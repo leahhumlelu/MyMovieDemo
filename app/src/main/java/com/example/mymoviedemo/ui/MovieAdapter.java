@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.paging.PagedList;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.mymoviedemo.BuildConfig;
 import com.example.mymoviedemo.R;
+import com.example.mymoviedemo.databinding.MovieItemViewBinding;
 import com.example.mymoviedemo.model.Movie;
 
 import java.util.ArrayList;
@@ -51,31 +53,35 @@ public class MovieAdapter extends PagedListAdapter<Movie,MovieAdapter.MovieViewH
     @NonNull
     @Override
     public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item_view,parent,false);
-        return new MovieViewHolder(view);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        MovieItemViewBinding movieItemViewBinding = MovieItemViewBinding.inflate(layoutInflater,parent,false);
+        return new MovieViewHolder(movieItemViewBinding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         final Movie movie = getItem(position);
         if(movie==null) return;
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.bind(movie);
+        holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 clickListener.onClick(movie);
             }
         });
-        Uri moviePosterUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.POSTER_SIZE+movie.getPosterPath());
-        Log.i(TAG, "onBindViewHolder: "+moviePosterUri);
-        Glide.with(holder.itemView).load(moviePosterUri).into(holder.moviePosterIv);
     }
 
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
-        ImageView moviePosterIv;
-        public MovieViewHolder(@NonNull View itemView) {
-            super(itemView);
-            moviePosterIv = itemView.findViewById(R.id.movie_poster_iv);
+        private MovieItemViewBinding binding;
+        public MovieViewHolder(@NonNull MovieItemViewBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(Movie movie){
+            binding.setMovie(movie);
+            binding.executePendingBindings();
         }
     }
 }

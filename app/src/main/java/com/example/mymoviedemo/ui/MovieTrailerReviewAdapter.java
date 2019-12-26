@@ -159,6 +159,7 @@ public class MovieTrailerReviewAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public class ReviewViewHolder extends RecyclerView.ViewHolder {
+
         TextView reviewAuthorTv,reviewContentTv;
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
