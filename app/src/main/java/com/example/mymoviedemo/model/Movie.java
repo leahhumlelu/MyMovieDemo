@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.library.baseAdapters.BR;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;

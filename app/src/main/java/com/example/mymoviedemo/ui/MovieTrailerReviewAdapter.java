@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mymoviedemo.R;
+import com.example.mymoviedemo.databinding.MovieDetailItemHeaderBinding;
+import com.example.mymoviedemo.databinding.MovieReviewItemViewBinding;
+import com.example.mymoviedemo.databinding.MovieTrailerItemViewBinding;
 import com.example.mymoviedemo.model.MovieReview;
 import com.example.mymoviedemo.model.MovieTrailer;
 
@@ -44,14 +47,14 @@ public class MovieTrailerReviewAdapter extends RecyclerView.Adapter<RecyclerView
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if(viewType==ITEM_TYPE_HEADER){
-            View view = inflater.inflate(R.layout.movie_detail_item_header,parent,false);
-            return new HeaderViewHolder(view);
+            MovieDetailItemHeaderBinding binding = MovieDetailItemHeaderBinding.inflate(inflater,parent,false);
+            return new HeaderViewHolder(binding);
         }else if(viewType == TRAILER_TYPE_ITEM){
-            View view = inflater.inflate(R.layout.movie_trailer_item_view,parent,false);
-            return new TrailerViewHolder(view);
+            MovieTrailerItemViewBinding binding = MovieTrailerItemViewBinding.inflate(inflater,parent,false);
+            return new TrailerViewHolder(binding);
         }else{
-            View view = inflater.inflate(R.layout.movie_review_item_view,parent,false);
-            return new ReviewViewHolder(view);
+            MovieReviewItemViewBinding binding = MovieReviewItemViewBinding.inflate(inflater,parent,false);
+            return new ReviewViewHolder(binding);
         }
     }
 
@@ -60,20 +63,18 @@ public class MovieTrailerReviewAdapter extends RecyclerView.Adapter<RecyclerView
         final Object item = data.get(position);
         if(item!=null){
             if (item instanceof String && holder instanceof HeaderViewHolder){
-                ((HeaderViewHolder) holder).headerView.setText((String)item);
+                ((HeaderViewHolder) holder).bind((String) item);
             }else if(item instanceof MovieTrailer && holder instanceof TrailerViewHolder){
-                ((TrailerViewHolder) holder).trailerNameTv.setText(((MovieTrailer) item).getName());
-                ((TrailerViewHolder) holder).trailerTypeTv.setText(((MovieTrailer) item).getType());
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                ((TrailerViewHolder) holder).bind((MovieTrailer) item);
+                ((TrailerViewHolder) holder).binding.getRoot().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         clickListener.onClick((MovieTrailer) item);
                     }
                 });
             }else if(item instanceof MovieReview && holder instanceof ReviewViewHolder){
-                ((ReviewViewHolder) holder).reviewAuthorTv.setText("Written by "+((MovieReview) item).getAuthor());
-                ((ReviewViewHolder) holder).reviewContentTv.setText(((MovieReview) item).getContent());
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                ((ReviewViewHolder) holder).bind((MovieReview) item);;
+                ((ReviewViewHolder) holder).binding.getRoot().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         clickListener.onClick((MovieReview) item);
@@ -84,13 +85,11 @@ public class MovieTrailerReviewAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void setMovieTrailers(List<MovieTrailer> movieTrailerList) {
-        //if(this.movieTrailers ==null) this.movieTrailers = new ArrayList<>();
         this.movieTrailers = movieTrailerList;
         setData();
     }
 
     public void setMovieReviews(List<MovieReview> movieReviewList) {
-        //if(this.movieReviews ==null) this.movieReviews = new ArrayList<>();
         this.movieReviews = movieReviewList;
         setData();
     }
@@ -128,42 +127,44 @@ public class MovieTrailerReviewAdapter extends RecyclerView.Adapter<RecyclerView
 
         }
         return super.getItemViewType(position);
-        /*if(position==0){
-
-        }else if(position >0 && position <= movieTrailers.size()){
-
-        }
-        else if(position == movieTrailers.size()+1){
-            return ITEM_TYPE_HEADER;
-        }else if(position > movieTrailers.size()+1 && position < data.size()){
-            return REVIEW_TYPE_ITEM;
-        }*/
 
     }
 
     public class HeaderViewHolder extends RecyclerView.ViewHolder{
-        TextView headerView;
-        public HeaderViewHolder(@NonNull View itemView) {
-            super(itemView);
-            headerView = itemView.findViewById(R.id.movie_detail_item_header);
+        MovieDetailItemHeaderBinding binding;
+        public HeaderViewHolder(@NonNull MovieDetailItemHeaderBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(String header){
+            binding.setHeader(header);
         }
     }
 
     public class TrailerViewHolder extends RecyclerView.ViewHolder {
-        TextView trailerTypeTv,trailerNameTv;
-        public TrailerViewHolder(@NonNull View itemView) {
-            super(itemView);
-            trailerTypeTv = itemView.findViewById(R.id.movie_detail_trailer_type);
-            trailerNameTv = itemView.findViewById(R.id.movie_detail_trailer_name);
+        MovieTrailerItemViewBinding binding;
+        public TrailerViewHolder(@NonNull MovieTrailerItemViewBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
+
+        public void bind(MovieTrailer trailer){
+            binding.setTrailer(trailer);
+        }
+
     }
 
     public class ReviewViewHolder extends RecyclerView.ViewHolder {
-        TextView reviewAuthorTv,reviewContentTv;
-        public ReviewViewHolder(@NonNull View itemView) {
-            super(itemView);
-            reviewAuthorTv = itemView.findViewById(R.id.movie_detail_review_author);
-            reviewContentTv= itemView.findViewById(R.id.movie_detail_review_content);
+        MovieReviewItemViewBinding binding;
+        public ReviewViewHolder(@NonNull MovieReviewItemViewBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
+
+        public void bind(MovieReview review){
+            binding.setReview(review);
+        }
+
     }
 }

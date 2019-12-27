@@ -1,61 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.DetailPageFragment">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="detailVM"
+            type="com.example.mymoviedemo.view_model.DetailPageViewModel" />
+        <variable
+            name="movieDetail"
+            type="com.example.mymoviedemo.model.Movie" />
+        <import type="com.example.mymoviedemo.utilities.MyBindingAdapter"/>
+    </data>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent"
+        tools:context=".ui.DetailPageFragment">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            app:contentScrim="@color/colorPrimary"
-            android:id="@+id/collapsing_toolbar_layout"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/detail_toolbar"
-            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Large">
+            android:layout_height="@dimen/app_bar_height"
+            android:fitsSystemWindows="true">
 
-            <ImageView
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_warning_black_24dp"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                app:collapsedTitleTextAppearance="@style/CollapsedAppBar"
+                app:title="@{movieDetail==null?`title`:movieDetail.title}"
+                app:contentScrim="@color/colorPrimary"
+                android:id="@+id/collapsing_toolbar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
-                android:id="@+id/movie_image"
-                android:scaleType="centerCrop"
-                app:layout_collapseMode="parallax" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/app_bar_height"
-                android:layout_gravity="bottom"
-                android:background="@drawable/scrim"/>
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:toolbarId="@+id/detail_toolbar"
+                app:expandedTitleTextAppearance="@style/ExpandedAppBar">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/detail_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"/>
+                <ImageView
+                    uri="@{MyBindingAdapter.createMovieBackdropUri(movieDetail==null?``:movieDetail.backdropPath)}"
+                    android:adjustViewBounds="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    android:id="@+id/movie_image"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="parallax" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/app_bar_height"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/scrim"/>
 
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/detail_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_margin="@dimen/std_margin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/favorite_btn"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        android:src="@drawable/ic_favorite_border_black_24dp" />
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/nested_content_view" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_margin="@dimen/std_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/favorite_btn"
+            app:layout_anchor="@id/app_bar"
+            app:layout_anchorGravity="bottom|end"
+            favoriteStatus="@{movieDetail==null?0:movieDetail.favorite}" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <include
+            app:movieDetail = "@{movieDetail}"
+            android:id="@+id/nested_scroll_view"
+            layout="@layout/nested_content_view" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

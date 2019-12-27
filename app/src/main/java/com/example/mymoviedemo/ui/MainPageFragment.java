@@ -1,5 +1,7 @@
 package com.example.mymoviedemo.ui;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.lifecycle.Observer;
 
@@ -30,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.mymoviedemo.data_fetch.Status;
+import com.example.mymoviedemo.databinding.MainPageFragmentBinding;
 import com.example.mymoviedemo.view_model.MainPageViewModel;
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.view_model.ViewModelProviderFactory;
@@ -42,7 +45,6 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class MainPageFragment extends Fragment implements MovieAdapter.ClickListener {
     private static final String TAG = "MainPageFragment";
-    private RecyclerView movieListRv;
     private NavController navController;
     private LinearLayout warningLayout;
     private Button retryBtn;
@@ -52,8 +54,8 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
     @Inject
     public ViewModelProviderFactory factory;
     private MainPageViewModel mViewModel;
-    private static final String PREFERENCE_SORT_KEY = "preference_sort_key";
     private int movie_sort;
+    private MainPageFragmentBinding binding;
 
     public static MainPageFragment newInstance() {
         return new MainPageFragment();
@@ -63,26 +65,17 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
     public void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
-        /*if(savedInstanceState!=null){
-            movie_sort = savedInstanceState.getInt(PREFERENCE_SORT_KEY);
-        }else{
-            movie_sort = Util.SORT_BY_POPULAR;
-        }*/
     }
 
-  /*  @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(PREFERENCE_SORT_KEY,movie_sort);
-    }*/
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.main_page_fragment, container, false);
-        setupViews(rootView);
+
+        binding = DataBindingUtil.inflate(inflater, R.layout.main_page_fragment, container, false);
+        setupViews();
         fetchData();
-        return rootView;
+        return binding.getRoot();
     }
 
     @Override
@@ -91,24 +84,31 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
         setHasOptionsMenu(true);
     }
 
-    private void setupViews(View view){
+    private void setupViews(){
         mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
-        movieListRv = view.findViewById(R.id.movie_list_rv);
+        binding.setLifecycleOwner(this);
+        binding.setMainVM(mViewModel);
+        navController = Navigation.findNavController(getActivity(),R.id.nav_host_fragment);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),GridLayoutManager.VERTICAL);
-        movieListRv.addItemDecoration(itemDecoration);
+        binding.movieListRv.addItemDecoration(itemDecoration);
+
         movieAdapter = new MovieAdapter(this);
-        movieListRv.setAdapter(movieAdapter);
-        warningLayout = view.findViewById(R.id.no_internet_warning_layout);
+        binding.movieListRv.setAdapter(movieAdapter);
+
+
+        /*warningLayout = view.findViewById(R.id.no_internet_warning_layout);
         retryBtn = view.findViewById(R.id.retry_btn);
+
         retryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mViewModel.retry();
             }
         });
+
+
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
-        navController = Navigation.findNavController(getActivity(),R.id.nav_host_fragment);
-        loadingProgressBar = view.findViewById(R.id.loading_progress_bar);
+        loadingProgressBar = view.findViewById(R.id.loading_progress_bar);*/
 
     }
 
@@ -124,13 +124,13 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
                         movieAdapter.submitList(moviePagedList);
                     }
                 });
-                mViewModel.getInitialLoadingState().observe(getViewLifecycleOwner(), new Observer<Status>() {
+                /*mViewModel.getInitialLoadingState().observe(getViewLifecycleOwner(), new Observer<Status>() {
                     @Override
                     public void onChanged(Status status) {
                         switch (status){
                             case LOADING:
-                                loadingProgressBar.setVisibility(View.VISIBLE);
-                                warningLayout.setVisibility(View.GONE);
+                                binding.loadingProgressBar.setVisibility(View.VISIBLE);
+                                binding.noInternetWarningLayout.setVisibility(View.GONE);
                                 break;
                             case NO_INTERNET:
                                 loadingProgressBar.setVisibility(View.GONE);
@@ -171,7 +171,7 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
                                 break;
                         }
                     }
-                });
+                });*/
             }
         });
 

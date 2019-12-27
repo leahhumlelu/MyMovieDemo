@@ -10,4 +10,6 @@
     <string name="trailer_label">Trailers</string>
     <string name="review_lable">User Reviews</string>
     <string name="intent_title">Watch trailer on</string>
+    <string name="overview_label">Overview</string>
+    <string name="release_date_label">release date</string>
 </resources>

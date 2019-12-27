@@ -1,5 +1,6 @@
 package com.example.mymoviedemo.ui;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.mymoviedemo.databinding.FavoriteMoviesFragmentBinding;
 import com.example.mymoviedemo.view_model.FavoriteMoviesViewModel;
 import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.view_model.ViewModelProviderFactory;
@@ -31,11 +33,11 @@ import dagger.android.support.AndroidSupportInjection;
 public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.ClickListener {
 
     private FavoriteMoviesViewModel mViewModel;
-    private RecyclerView favoriteMovieRv;
     private MovieAdapter movieAdapter;
     private NavController navController;
     @Inject
     public ViewModelProviderFactory factory;
+    private FavoriteMoviesFragmentBinding binding;
 
 
     public static FavoriteMoviesFragment newInstance() {
@@ -51,15 +53,14 @@ public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.Cli
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.favorite_movies_fragment, container, false);
-        setUpViews(rootView);
+        binding = DataBindingUtil.inflate(inflater,R.layout.favorite_movies_fragment,container,false);
+        setUpViews();
         fetchData();
-        return rootView;
+        return binding.getRoot();
     }
 
     private void fetchData() {
         mViewModel = ViewModelProviders.of(this,factory).get(FavoriteMoviesViewModel.class);
-
         mViewModel.getMoviePagedList().observe(this, new Observer<PagedList<Movie>>() {
             @Override
             public void onChanged(PagedList<Movie> movies) {
@@ -68,12 +69,11 @@ public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.Cli
         });
     }
 
-    private void setUpViews(View view) {
-        favoriteMovieRv = view.findViewById(R.id.favorite_movie_list_rv);
+    private void setUpViews() {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),GridLayoutManager.VERTICAL);
-        favoriteMovieRv.addItemDecoration(itemDecoration);
+        binding.favoriteMovieListRv.addItemDecoration(itemDecoration);
         movieAdapter = new MovieAdapter(this);
-        favoriteMovieRv.setAdapter(movieAdapter);
+        binding.favoriteMovieListRv.setAdapter(movieAdapter);
         navController = Navigation.findNavController(getActivity(),R.id.nav_host_fragment);
     }
 

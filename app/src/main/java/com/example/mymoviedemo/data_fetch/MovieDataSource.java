@@ -44,13 +44,15 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
         this.compositeDisposable = compositeDisposable;
         networkState = new MutableLiveData();
         initialLoading = new MutableLiveData();
+        networkState.postValue(Status.IDLE);
+        initialLoading.postValue(Status.IDLE);
     }
 
-    public LiveData<Status> getNetworkState() {
+    public MutableLiveData<Status> getNetworkState() {
         return networkState;
     }
 
-    public LiveData<Status> getInitialLoading() {
+    public MutableLiveData<Status> getInitialLoading() {
         return initialLoading;
     }
 
