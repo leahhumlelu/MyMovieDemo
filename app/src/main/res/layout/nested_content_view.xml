@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-
+        <import type="com.example.mymoviedemo.utilities.MyBindingAdapter"/>
+        <variable
+            name="movieDetail"
+            type="com.example.mymoviedemo.model.Movie" />
     </data>
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -20,8 +22,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <ImageView
+                    uri="@{MyBindingAdapter.createMoviePosterUri(movieDetail==null? ``:movieDetail.posterPath)}"
                     android:adjustViewBounds="true"
-                    tools:src="@drawable/ic_warning_black_24dp"
                     android:scaleType="fitXY"
                     android:layout_weight="2"
                     android:layout_width="0dp"
@@ -38,7 +40,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Overview"
+                        android:text="@string/overview_label"
                         android:textStyle="bold"
                         android:layout_marginBottom="@dimen/std_margin">
                     </TextView>
@@ -46,7 +48,7 @@
                         android:id="@+id/movie_overview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="hello"
+                        android:text="@{movieDetail==null?`content`:movieDetail.overview}"
                         android:ellipsize="end"
                         android:maxLines="8"/>
                 </LinearLayout>
@@ -76,7 +78,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="5.7/10"
+                        android:text="@{movieDetail==null? ``:movieDetail.voteAverage+`/10`}"
                         android:id="@+id/rate_tv"/>
                 </LinearLayout>
                 <LinearLayout
@@ -88,14 +90,14 @@
                     android:gravity="center"
                     android:id="@+id/release_layout">
                     <TextView
-                        android:text="release date"
+                        android:text="@string/release_date_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                     <TextView
                         android:id="@+id/release_date_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="5.7/10"/>
+                        android:text="@{movieDetail==null?``:movieDetail.releaseDate}"/>
                 </LinearLayout>
             </LinearLayout>
             <View

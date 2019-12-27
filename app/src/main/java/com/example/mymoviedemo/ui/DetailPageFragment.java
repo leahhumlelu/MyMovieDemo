@@ -49,18 +49,10 @@ import dagger.android.support.AndroidSupportInjection;
 public class DetailPageFragment extends Fragment implements MovieTrailerReviewAdapter.ClickListener  { //MovieTrailerAdapter.ClickListener, MovieReviewAdapter.ClickListener
     private static final String TAG = "DetailPageFragment";
     private DetailPageViewModel mViewModel;
-    private AppBarLayout appBarLayout;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
-    private ImageView movieIv,moviePosterIv;
-    private TextView movieOverview,movieRateTv,movieReleaseDateTv;
-    private FloatingActionButton floatingActionButton;
     private NavController navController;
     private Toolbar toolbar;
     private Movie fetchedMovie;
-    private RecyclerView movieTrailersRv,movieReviewRv,movieTrailerAndReviewRv;
     private MovieTrailerReviewAdapter movieTrailerReviewAdapter;
-    private MovieTrailerAdapter movieTrailerAdapter;
-    private MovieReviewAdapter movieReviewAdapter;
     private MenuItem favoriteBtn2;
     private static final String MOVIE_ARGUMENT_KEY = "movie_argument_key";
     private int movieId;
@@ -80,7 +72,7 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
         if(savedInstanceState==null){
             movieId = DetailPageFragmentArgs.fromBundle(getArguments()).getMovieId();
         }else{
-            movieId = savedInstanceState.getParcelable(MOVIE_ARGUMENT_KEY);
+            movieId = savedInstanceState.getInt(MOVIE_ARGUMENT_KEY);
         }
 
     }
@@ -95,9 +87,7 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater,R.layout.detail_page_fragment,container,false);
-        View rootView = inflater.inflate(R.layout.detail_page_fragment, container, false);
         setupViews(binding.getRoot());
-
         if(movieId!=0){
             fetchData(movieId);
         }
@@ -110,20 +100,19 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
             @Override
             public void onChanged(Movie movie) {
                 fetchedMovie = movie;
+                binding.setMovieDetail(movie);
                 updateUi(movie);
             }
         });
         mViewModel.getReviewsLiveData().observe(this, new Observer<List<MovieReview>>() {
             @Override
             public void onChanged(List<MovieReview> movieReviews) {
-                //movieReviewAdapter.setMovieReviews(movieReviews);
                 movieTrailerReviewAdapter.setMovieReviews(movieReviews);
             }
         });
         mViewModel.getTrailerLiveData().observe(this, new Observer<List<MovieTrailer>>() {
             @Override
             public void onChanged(List<MovieTrailer> movieTrailers) {
-                //movieTrailerAdapter.setMovieTrailers(movieTrailers);
                 movieTrailerReviewAdapter.setMovieTrailers(movieTrailers);
             }
         });
@@ -131,28 +120,9 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
 
     private void updateUi(Movie movie) {
         if(movie!=null){
-            binding.collapsingToolbarLayout.setTitle(movie.getOriginalTitle());
-            binding.collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.white));
-            binding.collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.white));
-
-            Uri movieBackdropUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.BACKDROP_SIZE+movie.getBackdropPath());
-            Log.i(TAG, "BACKGROUP URI "+movieBackdropUri);
-            Glide.with(getContext()).load(movieBackdropUri).into(binding.movieImage);
-
-            binding.nestedScrollView.movieOverview.setText(movie.getOverview());
-
-            Uri moviePosterUri = Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.POSTER_SIZE+movie.getPosterPath());
-            Log.i(TAG, "poster URI "+moviePosterUri);
-            Glide.with(getContext()).load(moviePosterUri).into(binding.nestedScrollView.movieDetailPosterIv);
-
-            binding.nestedScrollView.rateTv.setText(String.valueOf(movie.getVoteAverage()));
-            binding.nestedScrollView.releaseDateTv.setText(movie.getReleaseDate());
-
             if(movie.getFavorite()==1){
-                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                 favoriteBtn2.setIcon(R.drawable.ic_favorite_black_24dp);
             }else{
-                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                 favoriteBtn2.setIcon(R.drawable.ic_favorite_border_black_24dp);
             }
 
@@ -165,10 +135,14 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
         navController = Navigation.findNavController(getActivity(),R.id.nav_host_fragment);
         binding.setDetailVM(mViewModel);
         binding.setLifecycleOwner(this);
+        binding.setMovieDetail(null);
+
         binding.detailToolbar.inflateMenu(R.menu.detail_page_menu);
         favoriteBtn2 = binding.detailToolbar.getMenu().findItem(R.id.favorite_btn_2);
         favoriteBtn2.setVisible(false);
+
         NavigationUI.setupWithNavController(binding.collapsingToolbarLayout,binding.detailToolbar,navController);
+
         binding.appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -197,61 +171,11 @@ public class DetailPageFragment extends Fragment implements MovieTrailerReviewAd
                 return false;
             }
         });
-        movieTrailerAndReviewRv = view.findViewById(R.id.movie_detail_trailer_review_rv);
+
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
         binding.nestedScrollView.movieDetailTrailerReviewRv.addItemDecoration(itemDecoration);
         movieTrailerReviewAdapter = new MovieTrailerReviewAdapter(getContext(),this);
-        movieTrailerAndReviewRv.setAdapter(movieTrailerReviewAdapter);
-
-        /*toolbar = view.findViewById(R.id.detail_toolbar);
-        toolbar.inflateMenu(R.menu.detail_page_menu);
-
-        favoriteBtn2 = toolbar.getMenu().findItem(R.id.favorite_btn_2);
-        favoriteBtn2.setVisible(false);
-
-        appBarLayout = view.findViewById(R.id.app_bar);
-        floatingActionButton = view.findViewById(R.id.favorite_btn);
-        collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar_layout);
-        movieIv = view.findViewById(R.id.movie_image);
-        movieOverview = view.findViewById(R.id.movie_overview);
-        moviePosterIv = view.findViewById(R.id.movie_detail_poster_iv);
-        movieRateTv = view.findViewById(R.id.rate_tv);
-        movieReleaseDateTv = view.findViewById(R.id.release_date_tv);
-        NavigationUI.setupWithNavController(collapsingToolbarLayout,toolbar,navController);
-
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if(Math.abs(verticalOffset) >=appBarLayout.getTotalScrollRange()-56){//appbar is fully collapsed
-                    favoriteBtn2.setVisible(true);
-                }else{
-                    favoriteBtn2.setVisible(false);
-                }
-            }
-        });
-
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchFavorite();
-            }
-        });
-
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.favorite_btn_2:
-                        switchFavorite();
-                        return true;
-                }
-                return false;
-            }
-        });*/
-
-
-
-
+        binding.nestedScrollView.movieDetailTrailerReviewRv.setAdapter(movieTrailerReviewAdapter);
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.mymoviedemo.utilities;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.Layout;
@@ -16,24 +17,41 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.mymoviedemo.BuildConfig;
+import com.example.mymoviedemo.R;
 import com.example.mymoviedemo.data_fetch.Status;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MyBindingAdapter {
 
-    @BindingAdapter(value = {"uri","placeholder","error"})
-    public static void loadImage(@NonNull ImageView imageView, @NonNull Uri uri, @NonNull Drawable placeholder,@NonNull Drawable error){
-        Glide.with(imageView.getContext())
+    @BindingAdapter(value = {"uri"})
+    public static void loadImage(@NonNull ImageView imageView, Uri uri){
+        Context context = imageView.getContext();
+        if(uri==null) return;
+        Glide.with(context)
                 .load(uri)
-                .apply(new RequestOptions().error(error).placeholder(placeholder))
+                .apply(new RequestOptions()
+                        .error(context.getResources().getDrawable(R.drawable.ic_warning_black_24dp))
+                        .placeholder(context.getResources().getDrawable(R.drawable.movie_placeholder)))
                 .into(imageView);
     }
 
     public static Uri createMoviePosterUri(String posterUrl){
+        if(posterUrl.equals("")) return null;
         return Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.POSTER_SIZE+posterUrl);
     }
 
     public static Uri createMovieBackdropUri(String backdropUrl){
+        if(backdropUrl.equals("")) return null;
         return Uri.parse(BuildConfig.IMAGE_BASE_URL+BuildConfig.BACKDROP_SIZE+backdropUrl);
+    }
+
+    @BindingAdapter(value = {"favoriteStatus"})
+    public static void favoriteStatusToImageRes(@NonNull FloatingActionButton floatingActionButton,int favoriteStatus){
+        if(favoriteStatus==1){
+            floatingActionButton.setImageResource(R.drawable.ic_favorite_black_24dp);
+        }else{
+            floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+        }
     }
 
     @BindingAdapter(value = {"initialLoad","network"})

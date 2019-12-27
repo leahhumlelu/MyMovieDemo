@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.FavoriteMoviesFragment"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-    <RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.example.mymoviedemo.ui.AutofitRecyclerView
-            android:id="@+id/favorite_movie_list_rv"
+        android:layout_height="match_parent"
+        tools:context=".ui.FavoriteMoviesFragment"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:layout_height="match_parent">
 
-    </RelativeLayout>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <com.example.mymoviedemo.ui.AutofitRecyclerView
+                android:columnWidth = "@dimen/column_width"
+                android:id="@+id/favorite_movie_list_rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
+
+        </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</layout>

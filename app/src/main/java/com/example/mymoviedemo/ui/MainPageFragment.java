@@ -45,7 +45,6 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class MainPageFragment extends Fragment implements MovieAdapter.ClickListener {
     private static final String TAG = "MainPageFragment";
-    private RecyclerView movieListRv;
     private NavController navController;
     private LinearLayout warningLayout;
     private Button retryBtn;
@@ -109,8 +108,6 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
 
 
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
-
-
         loadingProgressBar = view.findViewById(R.id.loading_progress_bar);*/
 
     }

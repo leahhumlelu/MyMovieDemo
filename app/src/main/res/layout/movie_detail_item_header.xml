@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-    android:id="@+id/movie_detail_item_header"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/vertical_std_margin"
-    android:textStyle="bold"
-    android:textSize="@dimen/movie_label_ts"
-    android:layout_marginBottom="@dimen/vertical_std_margin">
-
-</TextView>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="header"
+            type="String" />
+    </data>
+    <TextView
+        android:id="@+id/movie_detail_item_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/vertical_std_margin"
+        android:textStyle="bold"
+        android:textSize="@dimen/movie_label_ts"
+        android:layout_marginBottom="@dimen/vertical_std_margin"
+        android:text="@{header}">
+    </TextView>
+</layout>

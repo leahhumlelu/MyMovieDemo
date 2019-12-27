@@ -7,6 +7,10 @@
         <variable
             name="detailVM"
             type="com.example.mymoviedemo.view_model.DetailPageViewModel" />
+        <variable
+            name="movieDetail"
+            type="com.example.mymoviedemo.model.Movie" />
+        <import type="com.example.mymoviedemo.utilities.MyBindingAdapter"/>
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -20,6 +24,8 @@
             android:fitsSystemWindows="true">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
+                app:collapsedTitleTextAppearance="@style/CollapsedAppBar"
+                app:title="@{movieDetail==null?`title`:movieDetail.title}"
                 app:contentScrim="@color/colorPrimary"
                 android:id="@+id/collapsing_toolbar_layout"
                 android:layout_width="match_parent"
@@ -27,11 +33,11 @@
                 android:fitsSystemWindows="true"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:toolbarId="@+id/detail_toolbar"
-                app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Large">
+                app:expandedTitleTextAppearance="@style/ExpandedAppBar">
 
                 <ImageView
+                    uri="@{MyBindingAdapter.createMovieBackdropUri(movieDetail==null?``:movieDetail.backdropPath)}"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/ic_warning_black_24dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fitsSystemWindows="true"
@@ -60,9 +66,10 @@
             android:id="@+id/favorite_btn"
             app:layout_anchor="@id/app_bar"
             app:layout_anchorGravity="bottom|end"
-            android:src="@drawable/ic_favorite_border_black_24dp" />
+            favoriteStatus="@{movieDetail==null?0:movieDetail.favorite}" />
 
         <include
+            app:movieDetail = "@{movieDetail}"
             android:id="@+id/nested_scroll_view"
             layout="@layout/nested_content_view" />
 

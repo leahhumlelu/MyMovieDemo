@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.mymoviedemo.R;
+import com.example.mymoviedemo.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -42,12 +43,9 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private static final String TAG = "MainActivity";
     @Inject
     public DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
-
-    private Toolbar toolbar;
-
+    private ActivityMainBinding binding;
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
-    private BottomNavigationView bottomNavigationView;
     private static final int INTERNET_REQUEST_CODE = 12;
     private static final int OPEN_SETTING_REQUEST_CODE = 13;
 
@@ -55,52 +53,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: ");
-        setContentView(R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_main);
         checkInternetPermission();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: ");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: ");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause: ");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: ");
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Log.d(TAG, "onBackPressed: ");
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.d(TAG, "onRestart: ");
-    }
 
     private void checkInternetPermission() {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED){
@@ -111,14 +67,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     private void setupNavigation() {
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.toolbar);
         appBarConfiguration = new AppBarConfiguration.Builder(R.id.mainPageFragment,R.id.favoriteMoviesFragment).build();
         navController = Navigation.findNavController(this,R.id.nav_host_fragment);
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
-        NavigationUI.setupWithNavController(bottomNavigationView,navController);
+        NavigationUI.setupWithNavController(binding.bottomNavigationView,navController);
         NavigationUI.setupActionBarWithNavController(this,navController,appBarConfiguration);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener(this);
         navController.addOnDestinationChangedListener(this);
     }
 
@@ -181,11 +135,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
         if(destination.getId()==R.id.detailPageFragment){
-            bottomNavigationView.setVisibility(View.GONE);
-            toolbar.setVisibility(View.GONE);
+            binding.bottomNavigationView.setVisibility(View.GONE);
+            binding.toolbar.setVisibility(View.GONE);
         }else{
-            bottomNavigationView.setVisibility(View.VISIBLE);
-            toolbar.setVisibility(View.VISIBLE);
+            binding.bottomNavigationView.setVisibility(View.VISIBLE);
+            binding.toolbar.setVisibility(View.VISIBLE);
         }
     }
 }
