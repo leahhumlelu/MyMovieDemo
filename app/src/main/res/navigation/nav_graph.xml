@@ -7,8 +7,8 @@
 
     <fragment
         android:id="@+id/mainPageFragment"
+        android:label="Movies"
         android:name="com.example.mymoviedemo.ui.MainPageFragment"
-        android:label="main_page_fragment"
         tools:layout="@layout/main_page_fragment" >
         <action
             android:id="@+id/action_mainPageFragment_to_detailPageFragment"
@@ -25,7 +25,7 @@
     <fragment
         android:id="@+id/favoriteMoviesFragment"
         android:name="com.example.mymoviedemo.ui.FavoriteMoviesFragment"
-        android:label="favorite_movies_fragment"
+        android:label="@string/favorite_movies_label"
         tools:layout="@layout/favorite_movies_fragment" >
         <action
             android:id="@+id/action_favoriteMoviesFragment_to_detailPageFragment"

@@ -38,6 +38,8 @@ public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.Cli
     @Inject
     public ViewModelProviderFactory factory;
     private FavoriteMoviesFragmentBinding binding;
+    private static final String SCROLL_POSITION_KEY ="scroll_position_key";
+    private int scrollPosition;
 
 
     public static FavoriteMoviesFragment newInstance() {
@@ -48,6 +50,9 @@ public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.Cli
     public void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
+        if(savedInstanceState!=null){
+            scrollPosition = savedInstanceState.getInt(SCROLL_POSITION_KEY);
+        }
     }
 
     @Override
@@ -59,22 +64,26 @@ public class FavoriteMoviesFragment extends Fragment implements MovieAdapter.Cli
         return binding.getRoot();
     }
 
-    private void fetchData() {
-        mViewModel = ViewModelProviders.of(this,factory).get(FavoriteMoviesViewModel.class);
-        mViewModel.getMoviePagedList().observe(this, new Observer<PagedList<Movie>>() {
-            @Override
-            public void onChanged(PagedList<Movie> movies) {
-                movieAdapter.submitList(movies);
-            }
-        });
-    }
 
     private void setUpViews() {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),GridLayoutManager.VERTICAL);
         binding.favoriteMovieListRv.addItemDecoration(itemDecoration);
         movieAdapter = new MovieAdapter(this);
         binding.favoriteMovieListRv.setAdapter(movieAdapter);
+        binding.favoriteMovieListRv.scrollToPosition(scrollPosition);
         navController = Navigation.findNavController(getActivity(),R.id.nav_host_fragment);
+        mViewModel = ViewModelProviders.of(this,factory).get(FavoriteMoviesViewModel.class);
+        binding.setFavoriteVM(mViewModel);
+        binding.setLifecycleOwner(this);
+    }
+
+    private void fetchData() {
+        mViewModel.getMoviePagedList().observe(this, new Observer<PagedList<Movie>>() {
+            @Override
+            public void onChanged(PagedList<Movie> movies) {
+                movieAdapter.submitList(movies);
+            }
+        });
     }
 
     @Override

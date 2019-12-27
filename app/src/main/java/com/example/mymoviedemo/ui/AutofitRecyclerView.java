@@ -48,4 +48,12 @@ public class AutofitRecyclerView extends RecyclerView {
             layoutManager.setSpanCount(spanCount);
         }
     }
+
+    public int getScrollPosition(){
+        return layoutManager.findFirstVisibleItemPosition();
+    }
+
+    public void setScrollPosition(int scrollPosition){
+        layoutManager.scrollToPosition(scrollPosition);
+    }
 }

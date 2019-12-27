@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -51,6 +52,9 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
     private SwipeRefreshLayout swipeRefreshLayout;
     private MovieAdapter movieAdapter;
     private ProgressBar loadingProgressBar;
+    private static final String SCROLL_POSITION_KEY ="scroll_position_key";
+    private int scrollPosition;
+    private Parcelable recyclerViewState;
     @Inject
     public ViewModelProviderFactory factory;
     private MainPageViewModel mViewModel;
@@ -65,8 +69,16 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
     public void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
+        if(savedInstanceState!=null){
+            scrollPosition = savedInstanceState.getInt(SCROLL_POSITION_KEY);
+        }
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SCROLL_POSITION_KEY,scrollPosition);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -84,6 +96,25 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        //binding.movieListRv.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        scrollPosition = binding.movieListRv.getScrollPosition();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        //recyclerViewState = binding.movieListRv.getLayoutManager().onSaveInstanceState();
+    }
+
     private void setupViews(){
         mViewModel = ViewModelProviders.of(this,factory).get(MainPageViewModel.class);
         binding.setLifecycleOwner(this);
@@ -94,6 +125,7 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
 
         movieAdapter = new MovieAdapter(this);
         binding.movieListRv.setAdapter(movieAdapter);
+        binding.movieListRv.setScrollPosition(scrollPosition);
 
 
         /*warningLayout = view.findViewById(R.id.no_internet_warning_layout);
@@ -124,7 +156,7 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
                         movieAdapter.submitList(moviePagedList);
                     }
                 });
-                /*mViewModel.getInitialLoadingState().observe(getViewLifecycleOwner(), new Observer<Status>() {
+                mViewModel.getInitialLoadingState().observe(getViewLifecycleOwner(), new Observer<Status>() {
                     @Override
                     public void onChanged(Status status) {
                         switch (status){
@@ -133,16 +165,16 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
                                 binding.noInternetWarningLayout.setVisibility(View.GONE);
                                 break;
                             case NO_INTERNET:
-                                loadingProgressBar.setVisibility(View.GONE);
-                                warningLayout.setVisibility(View.VISIBLE);
+                                binding.loadingProgressBar.setVisibility(View.GONE);
+                                binding.noInternetWarningLayout.setVisibility(View.VISIBLE);
                                 break;
                             case SUCCESS:
-                                loadingProgressBar.setVisibility(View.GONE);
-                                warningLayout.setVisibility(View.GONE);
+                                binding.loadingProgressBar.setVisibility(View.GONE);
+                                binding.noInternetWarningLayout.setVisibility(View.GONE);
                                 break;
                             case ERROR:
-                                loadingProgressBar.setVisibility(View.GONE);
-                                warningLayout.setVisibility(View.GONE);
+                                binding.loadingProgressBar.setVisibility(View.GONE);
+                                binding.noInternetWarningLayout.setVisibility(View.GONE);
                                 Toast.makeText(getContext(),getResources().getString(R.string.error_fetching_data),Toast.LENGTH_SHORT).show();
                                 break;
                         }
@@ -153,29 +185,30 @@ public class MainPageFragment extends Fragment implements MovieAdapter.ClickList
                     public void onChanged(Status status) {
                         switch (status){
                             case LOADING:
-                                loadingProgressBar.setVisibility(View.VISIBLE);
-                                warningLayout.setVisibility(View.GONE);
+                                binding.loadingProgressBar.setVisibility(View.VISIBLE);
+                                binding.noInternetWarningLayout.setVisibility(View.GONE);
                                 break;
                             case NO_INTERNET:
-                                loadingProgressBar.setVisibility(View.GONE);
-                                warningLayout.setVisibility(View.VISIBLE);
+                                binding.loadingProgressBar.setVisibility(View.GONE);
+                                binding.noInternetWarningLayout.setVisibility(View.VISIBLE);
                                 break;
                             case SUCCESS:
-                                loadingProgressBar.setVisibility(View.GONE);
-                                warningLayout.setVisibility(View.GONE);
+                                binding.loadingProgressBar.setVisibility(View.GONE);
+                                binding.noInternetWarningLayout.setVisibility(View.GONE);
                                 break;
                             case ERROR:
-                                loadingProgressBar.setVisibility(View.GONE);
-                                warningLayout.setVisibility(View.GONE);
+                                binding.loadingProgressBar.setVisibility(View.GONE);
+                                binding.noInternetWarningLayout.setVisibility(View.GONE);
                                 Toast.makeText(getContext(),getResources().getString(R.string.error_fetching_data),Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }
-                });*/
+                });
             }
         });
 
     }
+
 
     @Override
     public void onClick(Movie movie) {

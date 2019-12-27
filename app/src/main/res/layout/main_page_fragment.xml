@@ -27,22 +27,40 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical" />
 
-            <include
-                bind:mainVM = "@{mainVM}"
+            <LinearLayout
+                android:layout_centerInParent="true"
                 android:id="@+id/no_internet_warning_layout"
-                layout="@layout/no_internet_warning_layout"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true">
-            </include>
+                android:gravity="center_horizontal">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_warning_black_24dp">
+                </ImageView>
+                <TextView
+                    android:layout_marginTop="@dimen/vertical_std_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_internet_warning_text">
+                </TextView>
+                <Button
+                    android:onClick="@{()-> mainVM.retry()}"
+                    android:layout_marginTop="@dimen/vertical_std_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/retry_button"
+                    android:id="@+id/retry_btn">
+                </Button>
+
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/loading_progress_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                initialLoad="@{mainVM.initialLoadingState}"
-                network="@{mainVM.networkState}"/>
+                android:layout_centerInParent="true" />
         </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

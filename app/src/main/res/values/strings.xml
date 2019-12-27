@@ -4,12 +4,14 @@
     <string name="retry_button">Tap here to retry</string>
     <string name="favorite_or_not">favorite or not</string>
     <string name="sort_popular">Popular</string>
-    <string name="sort_top_rate">Top rated</string>
+    <string name="sort_top_rate">Top Rated</string>
     <string name="main_page_menu_description">change movie category</string>
     <string name="error_fetching_data">Error in fetching data</string>
     <string name="trailer_label">Trailers</string>
     <string name="review_lable">User Reviews</string>
     <string name="intent_title">Watch trailer on</string>
     <string name="overview_label">Overview</string>
-    <string name="release_date_label">release date</string>
+    <string name="release_date_label">Release Date</string>
+    <string name="no_favorite_movies">No favorite movies</string>
+    <string name="favorite_movies_label">Favorite Movies</string>
 </resources>
